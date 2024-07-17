@@ -1,18 +1,20 @@
 [![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
-[![JCS-ELPA](https://raw.githubusercontent.com/jcs-emacs/badges/master/elpa/v/codemetrics.svg)](https://jcs-emacs.github.io/jcs-elpa/#/codemetrics)
+[![JCS-ELPA](https://raw.githubusercontent.com/jcs-emacs/badges/master/elpa/v/cognitive-complexity.svg)](https://jcs-emacs.github.io/jcs-elpa/#/cognitive-complexity)
 <a href="#"><img align="right" src="./etc/logo.png" width="20%"></a>
 
 # Code Metrics
-> Plugin shows complexity information
+Show the cognitive complexity of the code
 
-[![CI](https://github.com/emacs-vs/codemetrics/actions/workflows/test.yml/badge.svg)](https://github.com/emacs-vs/codemetrics/actions/workflows/test.yml)
+[![CI](https://github.com/abougouffa/cognitive-complexity/actions/workflows/test.yml/badge.svg)](https://github.com/abougouffa/cognitive-complexity/actions/workflows/test.yml)
 
 <img src="./etc/demo.gif" />
 
-This plugin implements live calculation of the **Cognitive Complexity** metric,
-which was proposed by G. Ann Campbell in
-[Cognitive Complexity - A new way of measuring understandability](https://www.sonarsource.com/docs/CognitiveComplexity.pdf)
-(c) SonarSource S.A. 2016-2021, Switzerland.
+This package is a direct `treesit` port of the `tree-sitter` based
+[codemetrics](https://github.com/emacs-vs/codemetrics). It implements live
+calculation of the **Cognitive Complexity** metric, which was proposed by G. Ann
+Campbell in [Cognitive Complexity - A new way of measuring
+understandability](https://www.sonarsource.com/docs/CognitiveComplexity.pdf) (c)
+SonarSource S.A. 2016-2021, Switzerland.
 
 > **Abstract:** Cyclomatic Complexity was initially formulated as a measurement
 > of the "testability and maintainability" of the control flow of a module.
@@ -22,6 +24,10 @@ which was proposed by G. Ann Campbell in
 > evaluate code in order to remedy Cyclomatic Complexity’s shortcomings and
 > produce a measurement that more accurately reflects the relative difficulty of
 > understanding, and therefore of maintaining methods, classes, and applications.
+
+Please note that this documentation is not up-to-date (it is basically the same
+as `codemetrics`'), I will try to enrich it with `cognitive-complexity` specifc
+information later!
 
 <!-- markdown-toc start - Don't edit this section. Run M-x markdown-toc-refresh-toc -->
 **Table of Contents**
@@ -51,27 +57,27 @@ which was proposed by G. Ann Campbell in
 ### 🔍 Method 1. with `straight.el` and `use-package`:
 
 ```elisp
-(use-package codemetrics
-  :straight (codemetrics :type git :host github :repo "jcs-elpa/codemetrics"))
+(use-package cognitive-complexity
+  :straight (:host github :repo "abougouffa/cognitive-complexity"))
 ```
 
 ### 🔍 Method 2. Manual
 
 ```sh
-git clone https://github.com/jcs-elpa/codemetrics /path/to/lib
+git clone https://github.com/abougouffa/cognitive-complexity /path/to/lib
 ```
 
 then in Emacs:
 
 ```elisp
 (add-to-list 'load-path "/path/to/lib")
-(require 'codemetrics)
+(require 'cognitive-complexity)
 ```
 
 or
 
 ```elisp
-(use-package codemetrics
+(use-package cognitive-complexity
   :load-path "/path/to/lib")
 ```
 
@@ -80,24 +86,22 @@ or
 The simplest way to start using this package:
 
 ```elisp
-(codemetrics-mode 1)
+(cognitive-complexity-mode 1)
 ```
 
 ### 📚 Use it as a library
 
 These are functions you can use to analyze:
 
-| Functions             | Description                        |
-|-----------------------|------------------------------------|
-| `codemetrics-analyze` | Analyze a string with `major-mode` |
-| `codemetrics-region`  | Analyze region                     |
-| `codemetrics-buffer`  | Analyze the whole buffer           |
+| Functions                      | Description                        |
+|--------------------------------|------------------------------------|
+| `cognitive-complexity-analyze` | Analyze a string with `major-mode` |
+| `cognitive-complexity-region`  | Analyze region                     |
+| `cognitive-complexity-buffer`  | Analyze the whole buffer           |
 
 All these functions return the score data indicating the complexity.
 
 ## 🔨 Supported languages
-> ⚠️ Please sort these two lists alphabetically!
-
 These languages are fairly complete:
 
 - Bash
@@ -122,21 +126,22 @@ These languages are in development:
 
 ## 📝 Customization
 
-Although codemetrics aims to have good analysis rules out of the box for all
-supported definitions, people will indubitably have their own preferences or
-desired functionality. The following section outlines how to add your own
-analysis definitions and analysis functions to make codemetrics work for you.
-If there are any improvements you find for existing or new languages, please do
-raise a PR so that others may benefit from better analysis in the future!
+Although `cognitive-complexity` aims to have good analysis rules out of the box
+for all supported definitions, people will indubitably have their own
+preferences or desired functionality. The following section outlines how to add
+your own analysis definitions and analysis functions to make
+cognitive-complexity work for you. If there are any improvements you find for
+existing or new languages, please do raise a PR so that others may benefit from
+better analysis in the future!
 
 ### ⚪ Analysis on new nodes
 
 Code-Metrics defines all its analysis definitions in the variable
-`codemetrics-rules` which is an alist with the key of the alist being the
+`cognitive-complexity-rules` which is an alist with the key of the alist being the
 mode and the value being another alist of analysis definitions.
 
 ```elisp
-;; Example of codemetrics-rules' structure
+;; Example of cognitive-complexity-rules' structure
 '((c-mode      . c-analysis-definitions)  ; <language>-analysis-definitions is structured as shown below
   (csharp-mode . csharp-analysis-definitions)
   (go-mode     . go-analysis-definitions)
@@ -145,8 +150,8 @@ mode and the value being another alist of analysis definitions.
 
 ;; Examle of a analysis definition alist
 (setq csharp-analysis-definitions
-    (if_statement   . (1 t))
-    ("&&"           . codemetrics-rules--logical-operators))
+    ("if_statement"   . (1 t))
+    ("&&"             . cognitive-complexity-rules--logical-operators))
 ```
 
 So you can select whatever node that you want to analyze on it.
@@ -160,14 +165,14 @@ are both very useful for this.
 
 Let's look at a quick example of adding a new analysis definition. Let's say you
 want to add analysis to `go-mode`'s `if_statement`. The analysis definition that
-is needed will be `'(if_statement . (1 t))`. To add this to the
-`codemetrics-rules`, you can do something like the following.
+is needed will be `'("if_statement" . (1 t))`. To add this to the
+`cognitive-complexity-rules`, you can do something like the following.
 
 ```emacs-lisp
-(push '(if_statement . (1 t)) (alist-get 'go-mode codemetrics-rules))
+(push '("if_statement" . (1 t)) (alist-get 'go-mode cognitive-complexity-rules))
 ```
 
-Now the new analysis definition should be usable by codemetrics!
+Now the new analysis definition should be usable by cognitive-complexity!
 
 ### 🔍 Writing new analysis functions
 
@@ -185,12 +190,12 @@ boolean represent increment of the nested level in the form
 conditional logic onto your analysis.
 
 As an example of an analysis function, take a look at the definition of the
-basic `codemetrics-rules--class-declaration`.
+basic `cognitive-complexity-rules--class-declaration`.
 
 ```elisp
-(defun codemetrics-rules--class-declaration (_node depth _nested)
+(defun cognitive-complexity-rules--class-declaration (_node depth _nested)
   "..."
-  (codemetrics-with-complexity
+  (cognitive-complexity-with-complexity
     (if (< 1 depth)  ; if class inside class,
         '(1 nil)     ; we score 1, but don't increase nested level
       '(0 nil))
@@ -199,7 +204,7 @@ basic `codemetrics-rules--class-declaration`.
 
 ## 🔗 References
 
-- [codemetrics](https://github.com/kisstkondoros/codemetrics)
+- [cognitive-complexity](https://github.com/kisstkondoros/cognitive-complexity)
 - [resharper-cognitivecomplexity](https://github.com/matkoch/resharper-cognitivecomplexity)
 - [gocognit](https://github.com/uudashr/gocognit)
 
@@ -260,14 +265,14 @@ $ eask lint package
 ### ❓ How to add an analysis rules?
 
 When adding a new analysis rules, add the analysis definition function to
-`codemetrics.el` itself near where the other rules functions live and then add
-the parser to `codemetrics-rules.el` file. Finally, if you are adding support
-for a new language, remember to add it to the `codemetrics-rules` variable.
+`cognitive-complexity.el` itself near where the other rules functions live and then add
+the parser to `cognitive-complexity-rules.el` file. Finally, if you are adding support
+for a new language, remember to add it to the `cognitive-complexity-rules` variable.
 
-When creating a new parser, name it `codemetrics-rules-<language>`.
+When creating a new parser, name it `cognitive-complexity-rules-<language>`.
 
 When creating a new analysis function, name it
-`codemetrics-rules-<language>-<feature>` or something similar.
+`cognitive-complexity-rules-<language>-<feature>` or something similar.
 
 #### 🔍 Where can I look for tree-sitter node?
 

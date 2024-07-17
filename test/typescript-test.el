@@ -1,4 +1,4 @@
-;;; typescript-test.el --- TypeScript language tests for codemetrics.el  -*- lexical-binding: t; -*-
+;;; typescript-test.el --- TypeScript language tests for cognitive-complexity.el  -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2024 Marie Katrine Ekeberg
 
@@ -21,17 +21,17 @@
 ;;
 
 ;;; Code:
-(require 'codemetrics)
+(require 'cognitive-complexity)
 (require 'typescript-mode)
 
-(codemetrics-test typescript-simple
+(cognitive-complexity-test typescript-simple
   "test/typescript/Simple.ts"
   typescript-mode
   '(1
-    (class_declaration . 0)
-    (method_definition . 0)
-    (call_expression . 0)
-    (method_definition . 0)
-    (if_statement . 1)))
+    ("class_declaration" . 0)
+    ("method_definition" . 0)
+    ("call_expression" . 0)
+    ("method_definition" . 0)
+    ("if_statement" . 1)))
 
 ;;; typescript-test.el ends here
