@@ -1,12 +1,13 @@
-;;; cognitive-complexity.el --- Plugin shows cognitive complexity information  -*- lexical-binding: t; -*-
+;;; cognitive-complexity.el --- Minor mode to show the cognitive complexity of code  -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2023-2024  Shen, Jen-Chieh
+;; Copyright (C) 2024  Abdelhak BOUGOUFFA
 
-;; Author: Shen, Jen-Chieh <jcs090218@gmail.com>
-;; Maintainer: Shen, Jen-Chieh <jcs090218@gmail.com>
-;; URL: https://github.com/emacs-vs/cognitive-complexity
-;; Version: 0.1.0
-;; Package-Requires: ((emacs "29.1") (dash "2.19.1"))
+;; Author: Abdelhak BOUGOUFFA
+;; Maintainer: Abdelhak BOUGOUFFA
+;; URL: https://github.com/abougouffa/cognitive-complexity
+;; Version: 1.0.0
+;; Package-Requires: ((emacs "29.1"))
 ;; Keywords: convenience complexity
 
 ;; This file is not part of GNU Emacs.
@@ -123,20 +124,21 @@ WEIGHT is used to determine the final score."
 ;; (@* "Util" )
 ;;
 
-(defmacro cognitive-complexity--ensure-ts (&rest body)
+(defmacro cognitive-complexity--with-treesit (&rest body)
   "Run BODY only if `tree-sitter-mode` is enabled."
   (declare (indent 0))
-  `(if (let ((lang (treesit-language-at (point-min)))) (and (treesit-ready-p lang) (treesit-parser-list) t))
+  `(if (and (treesit-available-p) (treesit-parser-list) t)
        (progn ,@body)
      (message "Ignoring block since `treesit' isn't available for this buffer!")))
 
-(defmacro cognitive-complexity--with-current-buffer (buffer-or-name &rest body)
+(defmacro cognitive-complexity--with-current-visible-buffer (buffer-or-name &rest body)
   "Safely execute BODY when BUFFER-OR-NAME is displayed."
   (declare (indent 1))
   `(when (get-buffer-window ,buffer-or-name)
     (with-current-buffer ,buffer-or-name ,@body)))
 
 (defun cognitive-complexity--count-matches (regexps str &optional start end)
+  "Count matches of REGEXPS in STR, with optional START and END."
   (let ((count 0))
     (dolist (regexp (ensure-list regexps))
       (cl-incf count (save-match-data ; stolen from `s-count-matches'
@@ -146,41 +148,36 @@ WEIGHT is used to determine the final score."
                          (count-matches regexp (or start 1) (or end (point-max)))))))
     count))
 
-(defun cognitive-complexity--compare-type (node type)
+(defun cognitive-complexity--type-equal (node type)
   "Compare NODE's type to TYPE."
-  ;; tsc-node-type returns a symbol or a string and `string=' automatically
-  ;; converts symbols to strings
   (let ((node-type (treesit-node-type node)))
-    (if (listp type) (member node-type type)
-      (string= node-type type))))
+    (if (listp type) (member node-type type) (string= node-type type))))
 
-(defun cognitive-complexity--child-node-traverse-p (node child)
-  "Return non-nil if CHILD is a child node from NODE in traverse scope."
+(defun cognitive-complexity--is-parent-p (node child)
+  "Return non-nil if NODE is a parent of CHILD."
   (treesit-parent-until child (lambda (n) (and n (treesit-node-eq node n)))))
 
-(defun cognitive-complexity--find-children (node type)
-  "Search through the children of NODE to find all with type equal to TYPE;
-then return that list."
-  (cl-remove-if-not (lambda (child) (cognitive-complexity--compare-type child type))
-                    (treesit-node-children node)))
+(defun cognitive-complexity--find-children-by-type (node type)
+  "Return a list of NODE's children of TYPE."
+  (treesit-filter-child node (lambda (child) (not (cognitive-complexity--type-equal child type)))))
 
-(defun cognitive-complexity--find-parent (node type)
-  "Find the TYPE of parent from NODE."
-  (treesit-node-top-level node (lambda (n) (cognitive-complexity--compare-type n type))))
+(defun cognitive-complexity--find-parent-by-type (node type)
+  "Find the nearest NODE parent of TYPE."
+  (treesit-node-top-level node (lambda (n) (cognitive-complexity--type-equal n type))))
 
 ;;
 ;; (@* "Core" )
 ;;
 
-(defmacro cognitive-complexity-with-metrics (cond1 cond2)
+(defmacro cognitive-complexity-with-metrics (cogn-metric cycl-metric)
   "Execute conditions by variable `cognitive-complexity-metric'.
-
-All arguments COND1 and COND2 are followed by variable `cognitive-complexity-metric'."
+All arguments COGN-METRIC and CYCL-METRIC are followed by variable
+`cognitive-complexity-metric'."
   (declare (indent 0))
   `(cl-case cognitive-complexity-metric
-    (cognitive  ,cond1)
-    (cyclomatic ,cond2)
-    (t (user-error "Unknown complexity %s" cognitive-complexity-metric))))
+    (cognitive  ,cogn-metric)
+    (cyclomatic ,cycl-metric)
+    (t (user-error "Unknown complexity metric %s" cognitive-complexity-metric))))
 
 (defun cognitive-complexity-percentage (score)
   "Calculate percentage from SCORE."
@@ -193,19 +190,18 @@ All arguments COND1 and COND2 are followed by variable `cognitive-complexity-met
                         (cdr rule)))
    (cdr (assq (or mode major-mode) cognitive-complexity-rules))))
 
-(defun cognitive-complexity--traverse-mapc (func node &optional depth)
-  "Like function `tsc-traverse-mapc' but pass with node.
-
-For arguments FUNC and NODE, see function `tsc-traverse-mapc' for
-details.  Optional argument DEPTH is used for recursive depth calculation."
+(defun cognitive-complexity--children-depth-first-mapc (func node &optional depth)
+  "Apply FUNC to all NODE's children in a depth-first manner.
+Optional argument DEPTH is used for recursive depth calculation."
   (let ((depth (or depth 0)))
-    (mapc
+    (treesit-filter-child
+     node
      (lambda (node)
        (cl-incf depth)
        (funcall func node depth)
-       (cognitive-complexity--traverse-mapc func node depth)
-       (cl-decf depth))
-     (treesit-node-children node))))
+       (cognitive-complexity--children-depth-first-mapc func node depth)
+       (cl-decf depth)
+       nil))))
 
 (defun cognitive-complexity--accumulate (report)
   "Accumulate the score and add the information to the REPORT."
@@ -226,7 +222,7 @@ details.  Optional argument DEPTH is used for recursive depth calculation."
                  (depth      (nth 1 it))
                  (node-score (nth 2 it)))
             (if (and (< current-depth depth)
-                     (cognitive-complexity--child-node-traverse-p current-node node))
+                     (cognitive-complexity--is-parent-p current-node node))
                 (cl-incf accumulate-score node-score)
               (setq break t)))
           (cl-incf index))
@@ -236,62 +232,61 @@ details.  Optional argument DEPTH is used for recursive depth calculation."
 ;;;###autoload
 (defun cognitive-complexity-analyze (content &optional mode)
   "Analyze CONTENT in major (MODE), the code."
-  (cognitive-complexity--ensure-ts
-    (let* ((mode (or mode major-mode))
-           (rules (cognitive-complexity--rules mode))
-           ;; Collection of nesting levels
-           (nested-depths)
-           (nested 0)
-           (score 0)
-           (data)
-           ;; Helper for calculating nested value from our collection of nestings
-           (calculate-nested-value (lambda (nested-depths)
-                                     (max 0 (1- (length nested-depths)))))
-           ;; Global Records
-           (cognitive-complexity--recursion-identifier)
-           (lang (treesit-language-at (point-min))))
-      (with-current-buffer (get-buffer-create (format " *%s: cognitive-complexity*" (buffer-name)))
-        (delete-region (point-min) (point-max))
-        (insert content)
-        (delay-mode-hooks (funcall mode))
-        (treesit-parser-create lang)
-        (cognitive-complexity--traverse-mapc
-         (lambda (node depth)
-           ;; Handle recursion names and depth to avoid global calls
-           ;;  counting as recursion (like calling a function outside
-           ;;  a function in bash).
-           (when (and cognitive-complexity--recursion-identifier
-                      (<= depth cognitive-complexity--recursion-identifier-depth))
-             (setq cognitive-complexity--recursion-identifier nil))
-           ;; Decrement out if needed (if we have moved out of the last nesting)
-           (setq nested-depths
-                 ;; Replacement of `-drop-while'
-                 (seq-subseq nested-depths (or (cl-position-if-not (lambda (nested) (<= depth nested)) nested-depths) 0))
-                 nested (funcall calculate-nested-value nested-depths))
-           (when-let* ((type (treesit-node-type node))
-                       (a-rule (assoc type rules))  ; cons
-                       (rule (cdr a-rule)))
-             (let* ((rules-data (if (functionp rule)
-                                    (funcall rule node depth nested)
-                                  rule))
-                    (weight     (nth 0 rules-data))
-                    (inc-nested (nth 1 rules-data)))
-               (when inc-nested
-                 (let ((last-depth (or (nth 0 nested-depths)
-                                       depth)))
-                   (when (or (< last-depth depth)
-                             (zerop (length nested-depths)))
-                     (push depth nested-depths)
-                     (setq nested (funcall calculate-nested-value nested-depths)))))
-               (cognitive-complexity--log "depth: %s, nested-depths: %s, nested: %s"
-                                          depth nested-depths nested)
-               (let ((node-score (if inc-nested (+ weight nested) weight)))
-                 (cognitive-complexity--log "%s" (cons type node-score))
-                 (push (list node depth node-score) data)
-                 ;; The first value is plus, second is times.
-                 (cl-incf score node-score)))))
-         (treesit-buffer-root-node)))
-      (cons score (reverse data)))))
+  (cognitive-complexity--with-treesit
+   (let* ((mode (or mode major-mode))
+          (rules (cognitive-complexity--rules mode))
+          ;; Collection of nesting levels
+          (nested-depths)
+          (nested 0)
+          (score 0)
+          (data)
+          ;; Helper for calculating nested value from our collection of nestings
+          (calculate-nested-value (lambda (nested-depths) (max 0 (1- (length nested-depths)))))
+          ;; Global Records
+          (cognitive-complexity--recursion-identifier)
+          (lang (treesit-language-at (point-min))))
+     (with-current-buffer (get-buffer-create (format " *%s: cognitive-complexity*" (buffer-name)))
+       (delete-region (point-min) (point-max))
+       (insert content)
+       (delay-mode-hooks (funcall mode))
+       (treesit-parser-create lang)
+       (cognitive-complexity--children-depth-first-mapc
+        (lambda (node depth)
+          ;; Handle recursion names and depth to avoid global calls
+          ;;  counting as recursion (like calling a function outside
+          ;;  a function in bash).
+          (when (and cognitive-complexity--recursion-identifier
+                     (<= depth cognitive-complexity--recursion-identifier-depth))
+            (setq cognitive-complexity--recursion-identifier nil))
+          ;; Decrement out if needed (if we have moved out of the last nesting)
+          (setq nested-depths
+                ;; Replacement of `-drop-while'
+                (seq-subseq nested-depths (or (cl-position-if-not (lambda (nested) (<= depth nested)) nested-depths) 0))
+                nested (funcall calculate-nested-value nested-depths))
+          (when-let* ((type (treesit-node-type node))
+                      (a-rule (assoc type rules))  ; cons
+                      (rule (cdr a-rule)))
+            (let* ((rules-data (if (functionp rule)
+                                   (funcall rule node depth nested)
+                                 rule))
+                   (weight     (nth 0 rules-data))
+                   (inc-nested (nth 1 rules-data)))
+              (when inc-nested
+                (let ((last-depth (or (nth 0 nested-depths)
+                                      depth)))
+                  (when (or (< last-depth depth)
+                            (zerop (length nested-depths)))
+                    (push depth nested-depths)
+                    (setq nested (funcall calculate-nested-value nested-depths)))))
+              (cognitive-complexity--log "depth: %s, nested-depths: %s, nested: %s"
+                                         depth nested-depths nested)
+              (let ((node-score (if inc-nested (+ weight nested) weight)))
+                (cognitive-complexity--log "%s" (cons type node-score))
+                (push (list node depth node-score) data)
+                ;; The first value is plus, second is times.
+                (cl-incf score node-score)))))
+        (treesit-buffer-root-node)))
+     (cons score (reverse data)))))
 
 ;;;###autoload
 (defun cognitive-complexity-region (&optional beg end)
@@ -311,8 +306,8 @@ details.  Optional argument DEPTH is used for recursive depth calculation."
 
 (defun cognitive-complexity-rules--class-declaration (_node depth _nested)
   "Define rule for `class' declaration.
-
-For argument DEPTH, see function `cognitive-complexity-analyze' for more information."
+For argument DEPTH, see function `cognitive-complexity-analyze'
+for more information."
   (cognitive-complexity-with-metrics
    (if (< 1 depth)  ; if class inside class,
        '(1 nil)     ; we score 1, but don't increase nested level
@@ -320,12 +315,11 @@ For argument DEPTH, see function `cognitive-complexity-analyze' for more informa
    '(1 nil)))
 
 (defun cognitive-complexity-rules--method-declaration-using-node-name (node depth nested node-name)
-  "Define rule for function/method declaration using node name NODE-NAME.
-
-For arguments NODE, DEPTH, and NESTED, see function `cognitive-complexity-analyze' for
-more information."
+  "Define rule for function/method declaration using NODE-NAME.
+For arguments NODE, DEPTH, and NESTED, see function
+`cognitive-complexity-analyze' for more information."
   ;; XXX: Record the recursion method name (identifier) identifier by node-name
-  (when-let ((node (car (cognitive-complexity--find-children node node-name))))
+  (when-let ((node (car (cognitive-complexity--find-children-by-type node node-name))))
     (setq cognitive-complexity--recursion-identifier (treesit-node-text node)
           cognitive-complexity--recursion-identifier-depth depth))
   (cognitive-complexity-with-metrics
@@ -337,15 +331,14 @@ more information."
 
 (defun cognitive-complexity-rules--method-declaration (node depth nested)
   "Define general rule for `method' declaration for most languages.
-
-For arguments NODE, DEPTH, and NESTED, see function `cognitive-complexity-analyze' for
-more information."
+For arguments NODE, DEPTH, and NESTED, see function
+`cognitive-complexity-analyze' for more information."
   (cognitive-complexity-rules--method-declaration-using-node-name node depth nested "identifier"))
 
 (defun cognitive-complexity-rules--operators (node operators)
   "Define rule for operators from OPERATORS argument.
-
-For argument NODE, see function `cognitive-complexity-analyze' for more information."
+For argument NODE, see function `cognitive-complexity-analyze'
+for more information."
   (cognitive-complexity-with-metrics
    (let* ((parent (treesit-node-parent node))
           (parent-text (treesit-node-text parent))
@@ -358,24 +351,23 @@ For argument NODE, see function `cognitive-complexity-analyze' for more informat
 
 (defun cognitive-complexity-rules--logical-operators (node &rest _)
   "Define rule for logical operators.
-
-For argument NODE, see function `cognitive-complexity-analyze' for more information."
+For argument NODE, see function `cognitive-complexity-analyze'
+for more information."
   (cognitive-complexity-rules--operators node '("&&" "||")))
 
 (defun cognitive-complexity-rules--outer-loop (node _depth _nested &optional children)
   "Define rule for outer loop (jump), `break' and `continue' statements.
-
 Optional argument CHILDREN is the children count.
-
-For argument NODE, see function `cognitive-complexity-analyze' for more information."
+For argument NODE, see function `cognitive-complexity-analyze'
+for more information."
   (cognitive-complexity-with-metrics
    (list (if (<= (treesit-node-child-count node) children) 0 1) nil)
    '(0 nil)))
 
 (defun cognitive-complexity-rules--recursion-using-node-name (node node-name)
-  "General recursion rule using the NODE name NODE-NAME as the function name."
+  "General recursion rule using NODE's NODE-NAME as the function name."
   (cognitive-complexity-with-metrics
-   (if-let* ((identifier (car (cognitive-complexity--find-children node node-name)))
+   (if-let* ((identifier (car (cognitive-complexity--find-children-by-type node node-name)))
              (text (treesit-node-text identifier))
              ((equal text cognitive-complexity--recursion-identifier)))
        '(1 nil)
@@ -389,9 +381,8 @@ For argument NODE, see function `cognitive-complexity-analyze' for more informat
 
 (defun cognitive-complexity-rules--elixir-call (node depth nested)
   "Define rule for Elixir `call' declaration.
-
-For argument NODE, DEPTH, and NESTED, see function `cognitive-complexity-analyze' for
-more information."
+For argument NODE, DEPTH, and NESTED, see function
+`cognitive-complexity-analyze' for more information."
   (cognitive-complexity-with-metrics
    (let* ((text (treesit-node-text node))
           (def (string-prefix-p "def " text))
@@ -406,7 +397,7 @@ more information."
 
 (defun cognitive-complexity--elisp-function-name (node)
   "Return elisp function name by NODE."
-  (when-let* ((func-node (cognitive-complexity--find-parent node "function_definition"))
+  (when-let* ((func-node (cognitive-complexity--find-parent-by-type node "function_definition"))
               (first-node (treesit-node-child func-node 2)))
     (treesit-node-text first-node)))
 
@@ -419,9 +410,9 @@ more information."
 
 (defun cognitive-complexity-rules--elisp-list (node &rest _)
   "Define rule for Emacs Lisp `list' node.
-
-For argument NODE, see function `cognitive-complexity-analyze' for more information."
-  (let* ((symbol (car (cognitive-complexity--find-children node "symbol")))
+For argument NODE, see function `cognitive-complexity-analyze'
+for more information."
+  (let* ((symbol (car (cognitive-complexity--find-children-by-type node "symbol")))
          (text (ignore-errors (treesit-node-text symbol)))
          (func-name (cognitive-complexity--elisp-function-name node)))
     (cond ((cognitive-complexity--elisp-statement-p text)
@@ -434,7 +425,8 @@ For argument NODE, see function `cognitive-complexity-analyze' for more informat
 (defun cognitive-complexity-rules--elisp-special-form (node &rest _)
   "Define rule for Emacs Lisp `special_form' node.
 
-For argument NODE, see function `cognitive-complexity-analyze' for more information."
+For argument NODE, see function `cognitive-complexity-analyze'
+for more information."
   (let* ((symbol (treesit-node-child node 1))
          (text (treesit-node-text symbol))
          (parent (treesit-node-parent node))
@@ -452,23 +444,23 @@ For argument NODE, see function `cognitive-complexity-analyze' for more informat
            '(0 nil)))))
 
 (defun cognitive-complexity-rules--java-outer-loop (node &rest _)
-  "Define rule for Java outer loop (jump), `break' and `continue' statements.
-
-For argument NODE, see function `cognitive-complexity-analyze' for more information."
+  "Java outer loop (jump), `break' and `continue' statements.
+For argument NODE, see function `cognitive-complexity-analyze'
+for more information."
   (cognitive-complexity-rules--outer-loop node nil nil 2))
 
 (defun cognitive-complexity-rules--kotlin-outer-loop (node &rest _)
-  "Define rule for Java outer loop (jump), `break' and `continue' statements.
-
-For argument NODE, see function `cognitive-complexity-analyze' for more information."
+  "Java outer loop (jump), `break' and `continue' statements.
+For argument NODE, see function `cognitive-complexity-analyze'
+for more information."
   (cognitive-complexity-rules--outer-loop node nil nil 1))
 
 (defun cognitive-complexity-rules--julia-macro-expression (node &rest _)
   "Define rule for Julia `macro' expression.
-
-For argument NODE, see function `cognitive-complexity-analyze' for more information."
+For argument NODE, see function `cognitive-complexity-analyze'
+for more information."
   (cognitive-complexity-with-metrics
-   (if-let* ((identifier (car (cognitive-complexity--find-children node "identifier")))
+   (if-let* ((identifier (car (cognitive-complexity--find-children-by-type node "identifier")))
              (text (treesit-node-text identifier))
              ((string= text "goto")))
        '(1 nil)
@@ -476,17 +468,16 @@ For argument NODE, see function `cognitive-complexity-analyze' for more informat
    '(0 nil)))
 
 (defun cognitive-complexity-rules--lua-binary-expressions (node &rest _)
-  "Define rule for Lua binary expressions, which includes logical operators.
-
-For argument NODE, see function `cognitive-complexity-analyze' for more information."
+  "Lua binary expressions which include logical operators.
+For argument NODE, see function `cognitive-complexity-analyze'
+for more information."
   (cognitive-complexity-with-metrics
-   (let* ((node-is-logical-operator (lambda (node)
-                                      (-contains? '("and" "or")
-                                                  ;; binary_expressions contain 3 elements; two expressions and one middle string
-                                                  (treesit-node-text (treesit-node-child node 1)))))
-          (matches (cognitive-complexity--find-children node "binary_expression"))
-          (has-child-logical-operator (-any (lambda (x) (funcall node-is-logical-operator x))
-                                            matches))
+   (let* ((node-is-logical-operator
+           (lambda (node)
+             ;; binary_expressions contain 3 elements; two expressions and one middle string
+             (member (treesit-node-text (treesit-node-child node 1)) '("and" "or"))))
+          (matches (cognitive-complexity--find-children-by-type node "binary_expression"))
+          (has-child-logical-operator (cl-some (lambda (x) (funcall node-is-logical-operator x)) matches))
           (self-is-logical-operator (funcall node-is-logical-operator node)))
      (list (if (and self-is-logical-operator has-child-logical-operator)
                1
@@ -495,9 +486,9 @@ For argument NODE, see function `cognitive-complexity-analyze' for more informat
    '(1 nil)))
 
 (defun cognitive-complexity-rules--ruby-binary (node &rest _)
-  "Define rule for Ruby binary.
-
-For argument NODE, see function `cognitive-complexity-analyze' for more information."
+  "Ruby binary expression.
+For argument NODE, see function `cognitive-complexity-analyze'
+for more information."
   (cognitive-complexity-with-metrics
    (let ((text (treesit-node-text node))
          (sequence nil))
@@ -507,17 +498,17 @@ For argument NODE, see function `cognitive-complexity-analyze' for more informat
    '(1 nil)))
 
 (defun cognitive-complexity-rules--rust-outer-loop (node &rest _)
-  "Define rule for Rust outer loop (jump), `break' and `continue' statements.
-
-For argument NODE, see function `cognitive-complexity-analyze' for more information."
+  "Rust outer loop (jump), `break' and `continue' statements.
+For argument NODE, see function `cognitive-complexity-analyze'
+for more information."
   (cognitive-complexity-rules--outer-loop node nil nil 1))
 
 (defun cognitive-complexity-rules--scala-call-expression (node &rest _)
   "Define rule for Scala `while', `for', `do', and function call.
-
-For argument NODE, see function `cognitive-complexity-analyze' for more information."
+For argument NODE, see function `cognitive-complexity-analyze'
+for more information."
   (let ((text (treesit-node-text node)))
-    (cond ((string-match-p "^while[ (]" text)
+    (cond ((string-match-p "^while[ (]" text) ;; TODO: multiple spaces (!)
            '(1 t))
           ((string-match-p "^for[ (]" text)
            '(1 t))
@@ -527,8 +518,8 @@ For argument NODE, see function `cognitive-complexity-analyze' for more informat
 
 (defun cognitive-complexity-rules--scala-infix-expression (node &rest _)
   "Define rule for Scala `infix' expression.
-
-For argument NODE, see function `cognitive-complexity-analyze' for more information."
+For argument NODE, see function `cognitive-complexity-analyze'
+for more information."
   (let ((text (treesit-node-text node)))
     (cond ((string-match-p "=>" text)
            '(0 t))  ; don't score, but increase nested level
@@ -545,8 +536,8 @@ For argument NODE, see function `cognitive-complexity-analyze' for more informat
   :group 'cognitive-complexity
   :init-value nil
   :lighter "Cognitive-Complexity Debug"
-  (cognitive-complexity--ensure-ts
-    (cognitive-complexity--after-change)))
+  (cognitive-complexity--with-treesit
+   (cognitive-complexity--after-change)))
 
 ;;
 ;; (@* "Minor Mode" )
@@ -568,8 +559,8 @@ For argument NODE, see function `cognitive-complexity-analyze' for more informat
   :group 'cognitive-complexity
   :init-value nil
   :lighter "Cognitive-Complexity"
-  (cognitive-complexity--ensure-ts
-    (if cognitive-complexity-mode (cognitive-complexity--enable) (cognitive-complexity--disable))))
+  (cognitive-complexity--with-treesit
+   (if cognitive-complexity-mode (cognitive-complexity--enable) (cognitive-complexity--disable))))
 
 ;;
 ;; (@* "Display" )
@@ -643,7 +634,8 @@ For argument NODE, see function `cognitive-complexity-analyze' for more informat
       str)))
 
 (defun cognitive-complexity--display-nodes (&optional scope)
-  "Return a list of node types for display SCOPE variable `cognitive-complexity-display'."
+  "Return a list of node types for display SCOPE.
+SCOPE defaults to `cognitive-complexity-display' when not specified."
   (setq scope (or scope cognitive-complexity-display))
   (cl-case scope
     (`method (cl-case major-mode
@@ -679,35 +671,35 @@ For argument NODE, see function `cognitive-complexity-analyze' for more informat
 
 (defun cognitive-complexity--display-start (buffer)
   "Display result in BUFFER."
-  (cognitive-complexity--with-current-buffer buffer  ; make sure buffer still exists
-    (when cognitive-complexity-mode
-      (cognitive-complexity--delete-ovs)               ; clean up before re-rendering
-      (let* ((report (cognitive-complexity-buffer))
-             (report (if cognitive-complexity-debug-mode
-                         report
-                       (cognitive-complexity--accumulate report)))
-             (data (cdr report))              ; list of `node' and `score'
-             (scope (cognitive-complexity--display-nodes)))
-        (dolist (it data)
-          (let ((node             (nth 0 it))
-                (depth            (nth 1 it))
-                (node-score       (nth 2 it))
-                (accumulate-score (nth 3 it)))
-            (when (cognitive-complexity--display-this-node-p scope node)
-              (let* ((pos (treesit-node-start node))
-                     (column (save-excursion (goto-char pos) (current-column)))
-                     (ov (cognitive-complexity--make-ov pos))
-                     (score-or-percent (if cognitive-complexity-debug-mode
-                                           node-score
-                                         (cognitive-complexity-percentage accumulate-score)))
-                     (str (if cognitive-complexity-debug-mode
-                              (format "%s, +%s" depth score-or-percent)
-                            (format (cognitive-complexity--complexity-symbol score-or-percent)
-                                    score-or-percent))))
-                (when cognitive-complexity-debug-mode
-                  (add-face-text-property 0 (length str) 'cognitive-complexity-default nil str))
-                (setq str (concat (spaces-string column) str "\n"))
-                (overlay-put ov 'after-string str)))))))))
+  (cognitive-complexity--with-current-visible-buffer buffer  ; make sure buffer still exists
+                                                     (when cognitive-complexity-mode
+                                                       (cognitive-complexity--delete-ovs)               ; clean up before re-rendering
+                                                       (let* ((report (cognitive-complexity-buffer))
+                                                              (report (if cognitive-complexity-debug-mode
+                                                                          report
+                                                                        (cognitive-complexity--accumulate report)))
+                                                              (data (cdr report))              ; list of `node' and `score'
+                                                              (scope (cognitive-complexity--display-nodes)))
+                                                         (dolist (it data)
+                                                           (let ((node             (nth 0 it))
+                                                                 (depth            (nth 1 it))
+                                                                 (node-score       (nth 2 it))
+                                                                 (accumulate-score (nth 3 it)))
+                                                             (when (cognitive-complexity--display-this-node-p scope node)
+                                                               (let* ((pos (treesit-node-start node))
+                                                                      (column (save-excursion (goto-char pos) (current-column)))
+                                                                      (ov (cognitive-complexity--make-ov pos))
+                                                                      (score-or-percent (if cognitive-complexity-debug-mode
+                                                                                            node-score
+                                                                                          (cognitive-complexity-percentage accumulate-score)))
+                                                                      (str (if cognitive-complexity-debug-mode
+                                                                               (format "%s, +%s" depth score-or-percent)
+                                                                             (format (cognitive-complexity--complexity-symbol score-or-percent)
+                                                                                     score-or-percent))))
+                                                                 (when cognitive-complexity-debug-mode
+                                                                   (add-face-text-property 0 (length str) 'cognitive-complexity-default nil str))
+                                                                 (setq str (concat (spaces-string column) str "\n"))
+                                                                 (overlay-put ov 'after-string str)))))))))
 
 (defun cognitive-complexity--after-change (&rest _)
   "Register to `after-change-functions' variable."
