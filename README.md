@@ -21,45 +21,23 @@ SonarSource S.A. 2016-2021, Switzerland.
 > describes a new metric that breaks from the use of mathematical models to
 > evaluate code in order to remedy Cyclomatic Complexity’s shortcomings and
 > produce a measurement that more accurately reflects the relative difficulty of
-> understanding, and therefore of maintaining methods, classes, and applications.
+> understanding, and therefore of maintaining methods, classes, and
+> applications.
 
 Please note that this documentation is not up-to-date (it is basically the same
 as `codemetrics`'), I will try to enrich it with `cognitive-complexity` specifc
 information later!
 
-<!-- markdown-toc start - Don't edit this section. Run M-x markdown-toc-refresh-toc -->
-**Table of Contents**
+## Installation
 
-- [Code Metrics](#code-metrics)
-  - [💾 Installation](#💾-installation)
-    - [🔍 Method 1. with `straight.el` and `use-package`:](#🔍-method-1-with-straightel-and-use-package)
-    - [🔍 Method 2. Manual](#🔍-method-2-manual)
-  - [🖥 Usage](#🖥-usage)
-    - [📚 Use it as a library](#📚-use-it-as-a-library)
-  - [🔨 Supported languages](#🔨-supported-languages)
-  - [📝 Customization](#📝-customization)
-    - [⚪ Analysis on new nodes](#⚪-analysis-on-new-nodes)
-      - [❔ Example](#❔-example)
-    - [🔍 Writing new analysis functions](#🔍-writing-new-analysis-functions)
-  - [🔗 References](#🔗-references)
-  - [🛠️ Contribute](#🛠️-contribute)
-    - [🔬 Development](#🔬-development)
-    - [❓ How to add an analysis rules?](#❓-how-to-add-an-analysis-rules)
-      - [🔍 Where can I look for tree-sitter node?](#🔍-where-can-i-look-for-tree-sitter-node)
-  - [⚜️ License](#⚜️-license)
-
-<!-- markdown-toc end -->
-
-## 💾 Installation
-
-### 🔍 Method 1. with `straight.el` and `use-package`:
+### Using `straight.el` and `use-package`:
 
 ```elisp
 (use-package cognitive-complexity
   :straight (:host github :repo "abougouffa/cognitive-complexity"))
 ```
 
-### 🔍 Method 2. Manual
+### Manually
 
 ```sh
 git clone https://github.com/abougouffa/cognitive-complexity /path/to/lib
@@ -79,7 +57,7 @@ or
   :load-path "/path/to/lib")
 ```
 
-## 🖥 Usage
+## Usage
 
 The simplest way to start using this package:
 
@@ -87,7 +65,7 @@ The simplest way to start using this package:
 (cognitive-complexity-mode 1)
 ```
 
-### 📚 Use it as a library
+### Use it as a library
 
 These are functions you can use to analyze:
 
@@ -99,7 +77,7 @@ These are functions you can use to analyze:
 
 All these functions return the score data indicating the complexity.
 
-## 🔨 Supported languages
+## Supported languages
 These languages are fairly complete:
 
 - Bash
@@ -122,7 +100,7 @@ These languages are in development:
 - OCaml
 - Scala (upstream, kinda buggy)
 
-## 📝 Customization
+## Customization
 
 Although `cognitive-complexity` aims to have good analysis rules out of the box
 for all supported definitions, people will indubitably have their own
@@ -132,7 +110,7 @@ cognitive-complexity work for you. If there are any improvements you find for
 existing or new languages, please do raise a PR so that others may benefit from
 better analysis in the future!
 
-### ⚪ Analysis on new nodes
+### Analysis on new nodes
 
 Code-Metrics defines all its analysis definitions in the variable
 `cognitive-complexity-rules` which is an alist with the key of the alist being the
@@ -148,8 +126,8 @@ mode and the value being another alist of analysis definitions.
 
 ;; Examle of a analysis definition alist
 (setq csharp-analysis-definitions
-    ("if_statement"   . (1 t))
-    ("&&"             . cognitive-complexity-rules--logical-operators))
+    (if_statement   . (1 t))
+    ("&&"           . cognitive-complexity-rules--logical-operators))
 ```
 
 So you can select whatever node that you want to analyze on it.
@@ -159,7 +137,7 @@ To find what node you'll want to analyze, refer to the
 about viewing nodes. `tree-sitter-debug` and `tree-sitter-query-builder`
 are both very useful for this.
 
-#### ❔ Example
+#### Example
 
 Let's look at a quick example of adding a new analysis definition. Let's say you
 want to add analysis to `go-mode`'s `if_statement`. The analysis definition that
@@ -172,7 +150,7 @@ is needed will be `'("if_statement" . (1 t))`. To add this to the
 
 Now the new analysis definition should be usable by cognitive-complexity!
 
-### 🔍 Writing new analysis functions
+### Writing new analysis functions
 
 For more complex analysis, you can write your own analysis rules!
 
@@ -200,25 +178,14 @@ basic `cognitive-complexity-rules--class-declaration`.
     '(1 nil)))
 ```
 
-## 🔗 References
+## References
 
-- [cognitive-complexity](https://github.com/kisstkondoros/cognitive-complexity)
-- [resharper-cognitivecomplexity](https://github.com/matkoch/resharper-cognitivecomplexity)
-- [gocognit](https://github.com/uudashr/gocognit)
+- [`codemetrics`](https://github.com/emacs-vs/codemetrics)
+- [`cognitive-complexity`](https://github.com/kisstkondoros/cognitive-complexity)
+- [`resharper-cognitivecomplexity`](https://github.com/matkoch/resharper-cognitivecomplexity)
+- [`gocognit`](https://github.com/uudashr/gocognit)
 
-## 🛠️ Contribute
-
-[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](http://makeapullrequest.com)
-[![Elisp styleguide](https://img.shields.io/badge/elisp-style%20guide-purple)](https://github.com/bbatsov/emacs-lisp-style-guide)
-[![Donate on paypal](https://img.shields.io/badge/paypal-donate-1?logo=paypal&color=blue)](https://www.paypal.me/jcs090218)
-[![Become a patron](https://img.shields.io/badge/patreon-become%20a%20patron-orange.svg?logo=patreon)](https://www.patreon.com/jcs090218)
-
-If you would like to contribute to this project, you may either
-clone and make pull requests to this repository. Or you can
-clone the project and establish your own branch of this tool.
-Any methods are welcome!
-
-### 🔬 Development
+## Development
 
 To run the test locally, you will need the following tools:
 
@@ -244,7 +211,7 @@ To test compilation:
 $ eask compile
 ```
 
-**🪧 The following steps are optional, but we recommend you follow these lint results!**
+**The following steps are optional, but we recommend you follow these lint results!**
 
 The built-in `checkdoc` linter:
 
@@ -258,42 +225,22 @@ The standard `package` linter:
 $ eask lint package
 ```
 
-*📝 P.S. For more information, find the Eask manual at https://emacs-eask.github.io/.*
+*P.S. For more information, find the Eask manual at https://emacs-eask.github.io/.*
 
-### ❓ How to add an analysis rules?
+## How to add an analysis rules?
 
 When adding a new analysis rules, add the analysis definition function to
-`cognitive-complexity.el` itself near where the other rules functions live and then add
-the parser to `cognitive-complexity-rules.el` file. Finally, if you are adding support
-for a new language, remember to add it to the `cognitive-complexity-rules` variable.
+`cognitive-complexity.el` itself near where the other rules functions live and
+then add the parser to `cognitive-complexity-rules.el` file. Finally, if you are
+adding support for a new language, remember to add it to the
+`cognitive-complexity-rules` variable.
 
 When creating a new parser, name it `cognitive-complexity-rules-<language>`.
 
 When creating a new analysis function, name it
 `cognitive-complexity-rules-<language>-<feature>` or something similar.
 
-#### 🔍 Where can I look for tree-sitter node?
-
-Here are some techniques for finding your desired nodes in tree-sitter.
-
-To look for the correct node you have three options:
-
-- look at the `tree-sitter-[lang]/grammar.js` implementation. In the above
-  example, `if_statement` node is defined in the
-  [tree-sitter-c-sharp](https://github.com/tree-sitter/tree-sitter-c-sharp)'s
-  `grammar.js` file
-- open a file of your language choice in emacs and `M-x tree-sitter-debug-mode`.
-  This will display the whole s-expr representing your file
-- `(message "%S" (tsc-node-to-sexp))` in your function to display what your
-  function is seeing
-
-> ⚠️ Warning
->
-> Make sure you look into the correct repository. Repositories are managed
-> under [tree-sitter-langs](https://github.com/emacs-tree-sitter/tree-sitter-langs)'s
-> using git submodule. Some tree-sitter module aren't using the latest version!
-
-## ⚜️ License
+## License
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -308,4 +255,4 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-See [`LICENSE`](./LICENSE.txt) for details.
+See [`LICENSE`](/LICENSE) for details.
