@@ -6,7 +6,7 @@
 ;; Maintainer: Shen, Jen-Chieh <jcs090218@gmail.com>
 ;; URL: https://github.com/emacs-vs/cognitive-complexity
 ;; Version: 0.1.0
-;; Package-Requires: ((emacs "27.1") (tree-sitter "0.15.1") (s "1.12.0") (dash "2.19.1"))
+;; Package-Requires: ((emacs "29.1") (dash "2.19.1"))
 ;; Keywords: convenience complexity
 
 ;; This file is not part of GNU Emacs.
