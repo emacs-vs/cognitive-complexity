@@ -21,11 +21,11 @@
 ;;
 
 ;;; Code:
-(require 'codemetrics)
+(require 'cognitive-complexity)
 
-(codemetrics-test c-simple
+(cognitive-complexity-test c-simple
   "test/c/Simple.c"
-  c-mode
+  c-ts-mode
   '(4
     (preproc_ifdef . 1)
     (function_definition . 0)
@@ -34,17 +34,17 @@
     (if_statement . 1)
     (call_expression . 0)))
 
-(codemetrics-test c-recursion
+(cognitive-complexity-test c-recursion
   "test/c/Recursion.c"
-  c-mode
+  c-ts-mode
   '(2
     (function_definition . 0)
     (if_statement . 1)
     (call_expression . 1)))
 
-(codemetrics-test c-control-flow
+(cognitive-complexity-test c-control-flow
   "test/c/ControlFlow.c"
-  c-mode
+  c-ts-mode
   '(5
     (function_definition . 0)
     (switch_statement . 1)
@@ -57,9 +57,9 @@
     (if_statement . 1)
     (goto_statement . 2)))
 
-(codemetrics-test c-logical-operators
+(cognitive-complexity-test c-logical-operators
   "test/c/LogicalOperators.c"
-  c-mode
+  c-ts-mode
   '(6
     (function_definition . 0)
     (if_statement . 1)
@@ -75,9 +75,9 @@
 
 ;; Loosely inspired by go nested prints issue
 ;; (for verifying issue with multiple nested ifs inside a for-loop)
-(codemetrics-test c-nested-prints
+(cognitive-complexity-test c-nested-prints
   "test/c/NestedPrints.c"
-  c-mode
+  c-ts-mode
   '(5
     (function_definition . 0)
     (for_statement . 1)

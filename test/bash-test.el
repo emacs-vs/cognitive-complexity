@@ -23,7 +23,7 @@
 ;;; Code:
 (require 'codemetrics)
 
-(codemetrics-test bash-simple
+(cognitive-complexity-test bash-simple
   "test/bash/Simple.sh"
   sh-mode
   '(3
@@ -41,7 +41,7 @@
     (command . 0)
     (command . 0)))
 
-(codemetrics-test bash-recursion
+(cognitive-complexity-test bash-recursion
   "test/bash/Recursion.sh"
   sh-mode
   '(2

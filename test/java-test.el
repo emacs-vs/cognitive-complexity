@@ -23,7 +23,7 @@
 ;;; Code:
 (require 'codemetrics)
 
-(codemetrics-test java-recursion
+(cognitive-complexity-test java-recursion
   "test/java/Recursion.java"
   java-mode
   '(2

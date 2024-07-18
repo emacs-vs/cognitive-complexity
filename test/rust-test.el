@@ -21,12 +21,11 @@
 ;;
 
 ;;; Code:
-(require 'codemetrics)
-(require 'rust-mode)
+(require 'cognitive-complexity)
 
-(codemetrics-test rust-simple
+(cognitive-complexity-test rust-simple
   "test/rust/Simple.rs"
-  rust-mode
+  rust-ts-mode
   '(2
     (function_item . 0)
     (function_item . 0)
@@ -35,17 +34,17 @@
     (if_expression . 1)
     (for_expression . 1)))
 
-(codemetrics-test rust-recursion
+(cognitive-complexity-test rust-recursion
   "test/rust/Recursion.rs"
-  rust-mode
+  rust-ts-mode
   '(2
     (function_item . 0)
     (if_expression . 1)
     (call_expression . 1)))
 
-(codemetrics-test rust-nesting
+(cognitive-complexity-test rust-nesting
   "test/rust/Nesting.rs"
-  rust-mode
+  rust-ts-mode
   '(5
     (function_item . 0)
     (macro_invocation . 0)
@@ -58,9 +57,9 @@
     (loop_expression . 1)
     (if_expression . 2)))
 
-(codemetrics-test rust-logical-operators
+(cognitive-complexity-test rust-logical-operators
   "test/rust/LogicalOperators.rs"
-  rust-mode
+  rust-ts-mode
   '(6
     (function_item . 0)
     (if_expression . 1)
@@ -74,9 +73,9 @@
     ("||" . 1)
     ("&&" . 0)))
 
-(codemetrics-test rust-control-flow
+(cognitive-complexity-test rust-control-flow
   "test/rust/ControlFlow.rs"
-  rust-mode
+  rust-ts-mode
   '(17
     (function_item . 0)
     (loop_expression . 1)

@@ -22,38 +22,37 @@
 
 ;;; Code:
 
-(require 'codemetrics)
-(require 'go-mode)
+(require 'cognitive-complexity)
 
-(codemetrics-test simple-go-code
+(cognitive-complexity-test simple-go-code
   "test/go/Simple.go"
-  go-mode
+  go-ts-mode
   '(2
-    (function_declaration . 0)
-    (if_statement . 1)
-    (call_expression . 0)
-    (for_statement . 1)))
+    ("function_declaration" . 0)
+    ("if_statement" . 1)
+    ("call_expression" . 0)
+    ("for_statement" . 1)))
 
-(codemetrics-test recursion-go-code
+(cognitive-complexity-test recursion-go-code
   "test/go/Recursion.go"
-  go-mode
+  go-ts-mode
   '(2
-    (function_declaration . 0)
-    (if_statement . 1)
-    (call_expression . 1)))
+    ("function_declaration" . 0)
+    ("if_statement" . 1)
+    ("call_expression" . 1)))
 
 ;; Test of issue:
 ;; https://github.com/emacs-vs/codemetrics/issues/7
-(codemetrics-test go-nested-print-calls
+(cognitive-complexity-test go-nested-print-calls
   "test/go/NestedPrints.go"
-  go-mode
+  go-ts-mode
   '(6
-    (function_declaration . 0)
-    (for_statement . 1)
-    (if_statement . 2)
-    (call_expression . 0)
-    (if_statement . 2)
-    (call_expression . 0)
-    (for_statement . 1)))
+    ("function_declaration" . 0)
+    ("for_statement" . 1)
+    ("if_statement" . 2)
+    ("call_expression" . 0)
+    ("if_statement" . 2)
+    ("call_expression" . 0)
+    ("for_statement" . 1)))
 
 ;;; go-test.el ends here

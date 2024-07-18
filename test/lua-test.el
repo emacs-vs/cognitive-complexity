@@ -21,10 +21,10 @@
 ;;
 
 ;;; Code:
-(require 'codemetrics)
+(require 'cognitive-complexity)
 (require 'lua-mode)
 
-(codemetrics-test lua-simple
+(cognitive-complexity-test lua-simple
   "test/lua/Simple.lua"
   lua-mode
   '(3
@@ -37,7 +37,7 @@
     (if_statement . 2)
     (binary_expression . 0)))
 
-(codemetrics-test lua-recursion
+(cognitive-complexity-test lua-recursion
   "test/lua/Recursion.lua"
   lua-mode
   '(2
@@ -48,7 +48,7 @@
     (function_call . 1)
     (binary_expression . 0)))
 
-(codemetrics-test lua-nesting
+(cognitive-complexity-test lua-nesting
   "test/lua/Nesting.lua"
   lua-mode
   '(7
@@ -65,7 +65,7 @@
     (binary_expression . 0)
     (goto_statement . 1)))
 
-(codemetrics-test lua-logical-operators
+(cognitive-complexity-test lua-logical-operators
   "test/lua/LogicalOperators.lua"
   lua-mode
   '(2

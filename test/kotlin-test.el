@@ -21,10 +21,10 @@
 ;;
 
 ;;; Code:
-(require 'codemetrics)
+(require 'cognitive-complexity)
 (require 'kotlin-mode)
 
-(codemetrics-test simple-kotlin-code
+(cognitive-complexity-test simple-kotlin-code
   "test/kotlin/Simple.kt"
   kotlin-mode
   '(2
@@ -33,7 +33,7 @@
     (for_statement . 1)
     (call_expression . 0)))
 
-(codemetrics-test kotlin-recursion
+(cognitive-complexity-test kotlin-recursion
   "test/kotlin/Recursion.kt"
   kotlin-mode
   '(2
@@ -41,7 +41,7 @@
     (if_expression . 1)
     (call_expression . 1)))
 
-(codemetrics-test kotlin-break-continue
+(cognitive-complexity-test kotlin-break-continue
   "test/kotlin/BreakContinue.kt"
   kotlin-mode
   '(6
