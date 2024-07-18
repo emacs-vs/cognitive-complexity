@@ -21,8 +21,6 @@
 ;;
 
 ;;; Code:
-(require 'dash)
-
 (defmacro cognitive-complexity-test (test-name file major-mode expected-result)
   "Create a cognitive-complexity test named TEST-NAME using FILE in MAJOR-MODE.
 Expecting result EXPECTED-RESULT."
@@ -39,8 +37,7 @@ Expecting result EXPECTED-RESULT."
 
 (defun cognitive-complexity-test-utils-expression-scores (analyze-result)
   "Helper method to get a list of simple expression + score pairs to work with."
-  (--map (cons (treesit-node-type (car it))
-               (nth 2 it))
-         (cdr analyze-result)))
+  (mapcar (lambda (it) (cons (treesit-node-type (car it)) (nth 2 it)))
+          (cdr analyze-result)))
 
 ;;; test-helper.el ends here

@@ -25,17 +25,12 @@
 ;; along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 ;;; Commentary:
-;;
-;; Plugin shows complexity information.
-;;
 
 ;;; Code:
 
 (require 'cl-lib)
 (require 'pcase)
 (require 'rect)
-
-(require 'dash)
 (require 'treesit)
 
 (require 'cognitive-complexity-rules)
@@ -265,9 +260,10 @@ details.  Optional argument DEPTH is used for recursive depth calculation."
            (when (and cognitive-complexity--recursion-identifier
                       (<= depth cognitive-complexity--recursion-identifier-depth))
              (setq cognitive-complexity--recursion-identifier nil))
-           ;; Decrement out if needed
-           ;;  (if we have moved out of the last nesting)
-           (setq nested-depths (-drop-while (lambda (nested) (<= depth nested)) nested-depths)
+           ;; Decrement out if needed (if we have moved out of the last nesting)
+           (setq nested-depths
+                 ;; Replacement of `-drop-while'
+                 (seq-subseq nested-depths (or (cl-position-if-not (lambda (nested) (<= depth nested)) nested-depths) 0))
                  nested (funcall calculate-nested-value nested-depths))
            (when-let* ((type (treesit-node-type node))
                        (a-rule (assoc type rules))  ; cons
