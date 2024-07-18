@@ -195,7 +195,7 @@ basic `cognitive-complexity-rules--class-declaration`.
 ```elisp
 (defun cognitive-complexity-rules--class-declaration (_node depth _nested)
   "..."
-  (cognitive-complexity-with-complexity
+  (cognitive-complexity-with-metrics
     (if (< 1 depth)  ; if class inside class,
         '(1 nil)     ; we score 1, but don't increase nested level
       '(0 nil))

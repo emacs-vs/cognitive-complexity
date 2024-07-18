@@ -60,20 +60,18 @@
 
 (defun cognitive-complexity-rules-bash ()
   "Return rules for Bash."
-  `(("function_definition" . (lambda (node depth nested)
-                               (cognitive-complexity-rules--method-declaration-using-node-name node depth nested "word")))
+  `(("function_definition" . (lambda (node depth nested) (cognitive-complexity-rules--method-declaration-using-node-name node depth nested "word")))
     ("if_statement"        . (1 t))
     ("while_statement"     . (1 t))
     ("for_statement"       . (1 t))
-    ("command"             . (lambda (node &rest _)
-                               (cognitive-complexity-rules--recursion-using-node-name node "command_name")))))
+    ("command"             . (lambda (node &rest _) (cognitive-complexity-rules--recursion-using-node-name node "command_name")))))
 
 (defun cognitive-complexity-rules-c ()
   "Return rules for C."
   `(("function_definition" . (lambda (node depth nested)
                                ;; C has the identifier inside the function_declarator node, which is always inside a function_definition for valid C code
                                (let ((func-decl-node (car (cognitive-complexity--find-children node "function_declarator"))))
-                                 (cognitive-complexity-rules--method-declaration func-decl-node depth nested))))
+                                (cognitive-complexity-rules--method-declaration func-decl-node depth nested))))
     ("lambda_expression"   . (1 t))
     ("preproc_ifdef"       . (1 t))  ; macro
     ("if_statement"        . (1 t))
@@ -90,8 +88,8 @@
   "Return rules for C++."
   (append
    (cognitive-complexity-rules-c)
-   `((class_declaration   . cognitive-complexity-rules--class-declaration)
-     (catch_clause        . (1 t)))))
+   `(("class_declaration"   . cognitive-complexity-rules--class-declaration)
+     ("catch_clause"        . (1 t)))))
 
 (defun cognitive-complexity-rules-csharp ()
   "Return rules for C#."
@@ -173,8 +171,8 @@
     ("for_statement"       . (1 t))
     ("catch_clause"        . (1 t))
     ("finally_clause"      . (1 t))
-    ("&&"                . cognitive-complexity-rules--logical-operators)
-    ("||"                . cognitive-complexity-rules--logical-operators)
+    ("&&"                  . cognitive-complexity-rules--logical-operators)
+    ("||"                  . cognitive-complexity-rules--logical-operators)
     ("macro_expression"    . cognitive-complexity-rules--julia-macro-expression)
     ("call_expression"     . cognitive-complexity-rules--recursion)))
 
@@ -182,8 +180,7 @@
   "Return rules for Kotlin."
   `(("class_declaration"    . cognitive-complexity-rules--class-declaration)
     ("object_declaration"   . cognitive-complexity-rules--class-declaration)
-    ("function_declaration" . (lambda (node depth nested)
-                                (cognitive-complexity-rules--method-declaration-using-node-name node depth nested "simple_identifier")))
+    ("function_declaration" . (lambda (node depth nested) (cognitive-complexity-rules--method-declaration-using-node-name node depth nested "simple_identifier")))
     ("lambda_literal"       . (0 t))  ; don't score, but increase nested level
     ("anonymous_function"   . (0 t))  ; should in theory have same effect as lambda
     ("if_expression"        . (1 t))
@@ -195,12 +192,10 @@
     ("finally_block"        . (1 t))
     ("&&"                   . cognitive-complexity-rules--logical-operators)
     ("||"                   . cognitive-complexity-rules--logical-operators)
-    ("?:"                   . (lambda (node &rest _)
-                                (cognitive-complexity-rules--operators node '("?:"))))
+    ("?:"                   . (lambda (node &rest _) (cognitive-complexity-rules--operators node '("?:"))))
     ("break"                . cognitive-complexity-rules--kotlin-outer-loop)
     ("continue"             . cognitive-complexity-rules--kotlin-outer-loop)
-    ("call_expression"      . (lambda (node &rest _)
-                                (cognitive-complexity-rules--recursion-using-node-name node "simple_identifier")))))
+    ("call_expression"      . (lambda (node &rest _) (cognitive-complexity-rules--recursion-using-node-name node "simple_identifier")))))
 
 (defun cognitive-complexity-rules-lua ()
   "Return rules for Lua."
@@ -242,10 +237,7 @@
     ("except_clause"       . (1 t))
     ("finally_clause"      . (1 t))
     ("boolean_operator"    . cognitive-complexity-rules--logical-operators)
-    ("raise_statement"     . (lambda (&rest _)
-                               (cognitive-complexity-with-complexity
-                                 '(1 nil)
-                                 '(0 nil))))
+    ("raise_statement"     . (lambda (&rest _) (cognitive-complexity-with-metrics '(1 nil) '(0 nil))))
     ("call"                . cognitive-complexity-rules--recursion)))
 
 (defun cognitive-complexity-rules-ruby ()

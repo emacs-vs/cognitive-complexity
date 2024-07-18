@@ -46,37 +46,54 @@
   :group 'comm
   :link '(url-link :tag "Repository" "https://github.com/emacs-vs/cognitive-complexity"))
 
-(defcustom cognitive-complexity-complexity 'cognitive
-  "Type of the complexity computation."
-  :type '(choice (const :tag "Cognitive Complexity" cognitive)
+(defcustom cognitive-complexity-metric 'cognitive
+  "The metric type for complexity computation."
+  :type '(choice
+          (const :tag "Cognitive Complexity" cognitive)
           (const :tag "Cyclomatic Complexity" cyclomatic))
   :group 'cognitive-complexity)
 
 (defcustom cognitive-complexity-rules
-  `((c-mode          . ,(cognitive-complexity-rules-c))
-    (c++-mode        . ,(cognitive-complexity-rules-c++))
-    (csharp-mode     . ,(cognitive-complexity-rules-csharp))
-    (elixir-mode     . ,(cognitive-complexity-rules-elixir))
-    (emacs-lisp-mode . ,(cognitive-complexity-rules-elisp))
-    (go-mode         . ,(cognitive-complexity-rules-go))
-    (java-mode       . ,(cognitive-complexity-rules-java))
-    (javascript-mode . ,(cognitive-complexity-rules-javascript))
-    (js-mode         . ,(cognitive-complexity-rules-javascript))
-    (js2-mode        . ,(cognitive-complexity-rules-javascript))
-    (js3-mode        . ,(cognitive-complexity-rules-javascript))
-    (julia-mode      . ,(cognitive-complexity-rules-julia))
-    (kotlin-mode     . ,(cognitive-complexity-rules-kotlin))
-    (lua-mode        . ,(cognitive-complexity-rules-lua))
-    (php-mode        . ,(cognitive-complexity-rules-php))
-    (python-mode     . ,(cognitive-complexity-rules-python))
-    (rjsx-mode       . ,(cognitive-complexity-rules-javascript))
-    (ruby-mode       . ,(cognitive-complexity-rules-ruby))
-    (rust-mode       . ,(cognitive-complexity-rules-rust))
-    (rustic-mode     . ,(cognitive-complexity-rules-rust))
-    (sh-mode         . ,(cognitive-complexity-rules-bash))
-    (scala-mode      . ,(cognitive-complexity-rules-scala))
-    (swift-mode      . ,(cognitive-complexity-rules-swift))
-    (typescript-mode . ,(cognitive-complexity-rules-typescript)))
+  `((c-mode             . ,(cognitive-complexity-rules-c))
+    (c-ts-mode          . ,(cognitive-complexity-rules-c))
+    (c++-mode           . ,(cognitive-complexity-rules-c++))
+    (c++-ts-mode        . ,(cognitive-complexity-rules-c++))
+    (csharp-mode        . ,(cognitive-complexity-rules-csharp))
+    (csharp-ts-mode     . ,(cognitive-complexity-rules-csharp))
+    (elixir-mode        . ,(cognitive-complexity-rules-elixir))
+    (elixir-ts-mode     . ,(cognitive-complexity-rules-elixir))
+    (emacs-lisp-mode    . ,(cognitive-complexity-rules-elisp))
+    (go-mode            . ,(cognitive-complexity-rules-go))
+    (go-ts-mode         . ,(cognitive-complexity-rules-go))
+    (go-mod-ts-mode     . ,(cognitive-complexity-rules-go))
+    (java-mode          . ,(cognitive-complexity-rules-java))
+    (java-ts-mode       . ,(cognitive-complexity-rules-java))
+    (javascript-mode    . ,(cognitive-complexity-rules-javascript))
+    (js-ts-mode         . ,(cognitive-complexity-rules-javascript))
+    (js2-mode           . ,(cognitive-complexity-rules-javascript))
+    (js3-mode           . ,(cognitive-complexity-rules-javascript))
+    (julia-mode         . ,(cognitive-complexity-rules-julia))
+    (julia-ts-mode      . ,(cognitive-complexity-rules-julia))
+    (kotlin-mode        . ,(cognitive-complexity-rules-kotlin))
+    (kotlin-ts-mode     . ,(cognitive-complexity-rules-kotlin))
+    (lua-mode           . ,(cognitive-complexity-rules-lua))
+    (lua-ts-mode        . ,(cognitive-complexity-rules-lua))
+    (php-mode           . ,(cognitive-complexity-rules-php))
+    (python-mode        . ,(cognitive-complexity-rules-python))
+    (python-ts-mode     . ,(cognitive-complexity-rules-python))
+    (rjsx-mode          . ,(cognitive-complexity-rules-javascript))
+    (ruby-mode          . ,(cognitive-complexity-rules-ruby))
+    (ruby-ts-mode       . ,(cognitive-complexity-rules-ruby))
+    (rust-mode          . ,(cognitive-complexity-rules-rust))
+    (rust-ts-mode       . ,(cognitive-complexity-rules-rust))
+    (rustic-mode        . ,(cognitive-complexity-rules-rust))
+    (sh-mode            . ,(cognitive-complexity-rules-bash))
+    (bash-ts-mode       . ,(cognitive-complexity-rules-bash))
+    (scala-mode         . ,(cognitive-complexity-rules-scala))
+    (scala-ts-mode      . ,(cognitive-complexity-rules-scala))
+    (swift-mode         . ,(cognitive-complexity-rules-swift))
+    (typescript-mode    . ,(cognitive-complexity-rules-typescript))
+    (typescript-ts-mode . ,(cognitive-complexity-rules-typescript)))
   "An alist of (major-mode . (node-type . weight)).
 
 WEIGHT is used to determine the final score."
@@ -84,7 +101,7 @@ WEIGHT is used to determine the final score."
           :value-type (alist :key-type symbol :value-type function))
   :group 'cognitive-complexity)
 
-(defcustom cognitive-complexity-percent-score 8.0
+(defcustom cognitive-complexity-100-percent-score 8.0
   "The score represnet 100 percent."
   :type 'float
   :group 'cognitive-complexity)
@@ -134,12 +151,6 @@ WEIGHT is used to determine the final score."
                          (count-matches regexp (or start 1) (or end (point-max)))))))
     count))
 
-(defun cognitive-complexity--make-even (number)
-  "Ensure NUMBER is a even number."
-  (if (zerop (% number 2))
-      number
-    (1+ number)))
-
 (defun cognitive-complexity--compare-type (node type)
   "Compare NODE's type to TYPE."
   ;; tsc-node-type returns a symbol or a string and `string=' automatically
@@ -166,19 +177,19 @@ then return that list."
 ;; (@* "Core" )
 ;;
 
-(defmacro cognitive-complexity-with-complexity (cond1 cond2)
-  "Execute conditions by variable `cognitive-complexity-complexity'.
+(defmacro cognitive-complexity-with-metrics (cond1 cond2)
+  "Execute conditions by variable `cognitive-complexity-metric'.
 
-All arguments COND1 and COND2 are followed by variable `cognitive-complexity-complexity'."
+All arguments COND1 and COND2 are followed by variable `cognitive-complexity-metric'."
   (declare (indent 0))
-  `(cl-case cognitive-complexity-complexity
+  `(cl-case cognitive-complexity-metric
     (cognitive  ,cond1)
     (cyclomatic ,cond2)
-    (t (user-error "Unknown complexity %s" cognitive-complexity-complexity))))
+    (t (user-error "Unknown complexity %s" cognitive-complexity-metric))))
 
 (defun cognitive-complexity-percentage (score)
   "Calculate percentage from SCORE."
-  (floor (* (/ score cognitive-complexity-percent-score) 100.0)))
+  (floor (* (/ score cognitive-complexity-100-percent-score) 100.0)))
 
 (defun cognitive-complexity--rules (&optional mode)
   "Return rules from major (MODE)."
@@ -303,11 +314,11 @@ details.  Optional argument DEPTH is used for recursive depth calculation."
   "Define rule for `class' declaration.
 
 For argument DEPTH, see function `cognitive-complexity-analyze' for more information."
-  (cognitive-complexity-with-complexity
-    (if (< 1 depth)  ; if class inside class,
-        '(1 nil)     ; we score 1, but don't increase nested level
-      '(0 nil))
-    '(1 nil)))
+  (cognitive-complexity-with-metrics
+   (if (< 1 depth)  ; if class inside class,
+       '(1 nil)     ; we score 1, but don't increase nested level
+     '(0 nil))
+   '(1 nil)))
 
 (defun cognitive-complexity-rules--method-declaration-using-node-name (node depth nested node-name)
   "Define rule for function/method declaration using node name NODE-NAME.
@@ -318,12 +329,12 @@ more information."
   (when-let ((node (car (cognitive-complexity--find-children node node-name))))
     (setq cognitive-complexity--recursion-identifier (treesit-node-text node)
           cognitive-complexity--recursion-identifier-depth depth))
-  (cognitive-complexity-with-complexity
-    ;; These magic numbers are observed by TreeSitter AST.
-    (if (or (<= 5 depth) (<= 3 nested))
-        '(1 nil)
-      '(0 nil))
-    '(1 nil)))
+  (cognitive-complexity-with-metrics
+   ;; These magic numbers are observed by TreeSitter AST.
+   (if (or (<= 5 depth) (<= 3 nested))
+       '(1 nil)
+     '(0 nil))
+   '(1 nil)))
 
 (defun cognitive-complexity-rules--method-declaration (node depth nested)
   "Define general rule for `method' declaration for most languages.
@@ -336,15 +347,15 @@ more information."
   "Define rule for operators from OPERATORS argument.
 
 For argument NODE, see function `cognitive-complexity-analyze' for more information."
-  (cognitive-complexity-with-complexity
-    (let* ((parent (treesit-node-parent node))
-           (parent-text (treesit-node-text parent))
-           (sequence)
-           (count (cognitive-complexity--count-matches operators parent-text)))
-      (when (<= 2 count)
-        (setq sequence t))
-      (list (if sequence 1 0) nil))
-    '(1 nil)))
+  (cognitive-complexity-with-metrics
+   (let* ((parent (treesit-node-parent node))
+          (parent-text (treesit-node-text parent))
+          (sequence)
+          (count (cognitive-complexity--count-matches operators parent-text)))
+     (when (<= 2 count)
+       (setq sequence t))
+     (list (if sequence 1 0) nil))
+   '(1 nil)))
 
 (defun cognitive-complexity-rules--logical-operators (node &rest _)
   "Define rule for logical operators.
@@ -358,20 +369,20 @@ For argument NODE, see function `cognitive-complexity-analyze' for more informat
 Optional argument CHILDREN is the children count.
 
 For argument NODE, see function `cognitive-complexity-analyze' for more information."
-  (cognitive-complexity-with-complexity
-    (list (if (<= (treesit-node-child-count node) children) 0 1) nil)
-    '(0 nil)))
+  (cognitive-complexity-with-metrics
+   (list (if (<= (treesit-node-child-count node) children) 0 1) nil)
+   '(0 nil)))
 
 (defun cognitive-complexity-rules--recursion-using-node-name (node node-name)
   "General recursion rule using the NODE name NODE-NAME as the function name."
-  (cognitive-complexity-with-complexity
-    (if-let* ((identifier (car (cognitive-complexity--find-children node node-name)))
-              (text (treesit-node-text identifier))
-              ((equal text cognitive-complexity--recursion-identifier)))
-        '(1 nil)
-      '(0 nil))
-    ;; do nothing
-    '(0 nil)))
+  (cognitive-complexity-with-metrics
+   (if-let* ((identifier (car (cognitive-complexity--find-children node node-name)))
+             (text (treesit-node-text identifier))
+             ((equal text cognitive-complexity--recursion-identifier)))
+       '(1 nil)
+     '(0 nil))
+   ;; do nothing
+   '(0 nil)))
 
 (defun cognitive-complexity-rules--recursion (node &rest _)
   "Handle recursion for most languages use `identifier' NODE as the keyword."
@@ -382,17 +393,17 @@ For argument NODE, see function `cognitive-complexity-analyze' for more informat
 
 For argument NODE, DEPTH, and NESTED, see function `cognitive-complexity-analyze' for
 more information."
-  (cognitive-complexity-with-complexity
-    (let* ((text (treesit-node-text node))
-           (def (string-prefix-p "def " text))
-           (defmodule (string-prefix-p "defmodule " text)))
-      (cond (def
-             (cognitive-complexity-rules--method-declaration node depth nested))
-            (defmodule
-             (cognitive-complexity-rules--class-declaration node depth nested))
-            (t
-             (cognitive-complexity-rules--recursion node depth nested))))
-    '(1 nil)))
+  (cognitive-complexity-with-metrics
+   (let* ((text (treesit-node-text node))
+          (def (string-prefix-p "def " text))
+          (defmodule (string-prefix-p "defmodule " text)))
+     (cond (def
+            (cognitive-complexity-rules--method-declaration node depth nested))
+           (defmodule
+            (cognitive-complexity-rules--class-declaration node depth nested))
+           (t
+            (cognitive-complexity-rules--recursion node depth nested))))
+   '(1 nil)))
 
 (defun cognitive-complexity--elisp-function-name (node)
   "Return elisp function name by NODE."
@@ -457,44 +468,44 @@ For argument NODE, see function `cognitive-complexity-analyze' for more informat
   "Define rule for Julia `macro' expression.
 
 For argument NODE, see function `cognitive-complexity-analyze' for more information."
-  (cognitive-complexity-with-complexity
-    (if-let* ((identifier (car (cognitive-complexity--find-children node "identifier")))
-              (text (treesit-node-text identifier))
-              ((string= text "goto")))
-        '(1 nil)
-      '(0 nil))
-    '(0 nil)))
+  (cognitive-complexity-with-metrics
+   (if-let* ((identifier (car (cognitive-complexity--find-children node "identifier")))
+             (text (treesit-node-text identifier))
+             ((string= text "goto")))
+       '(1 nil)
+     '(0 nil))
+   '(0 nil)))
 
 (defun cognitive-complexity-rules--lua-binary-expressions (node &rest _)
   "Define rule for Lua binary expressions, which includes logical operators.
 
 For argument NODE, see function `cognitive-complexity-analyze' for more information."
-  (cognitive-complexity-with-complexity
-    (let* ((node-is-logical-operator (lambda (node)
-                                       (-contains? '("and" "or")
-                                                   ;; binary_expressions contain 3 elements; two expressions and one middle string
-                                                   (treesit-node-text (treesit-node-child node 1)))))
-           (matches (cognitive-complexity--find-children node "binary_expression"))
-           (has-child-logical-operator (-any (lambda (x) (funcall node-is-logical-operator x))
-                                             matches))
-           (self-is-logical-operator (funcall node-is-logical-operator node)))
-      (list (if (and self-is-logical-operator has-child-logical-operator)
-                1
-              0)
-            nil))
-    '(1 nil)))
+  (cognitive-complexity-with-metrics
+   (let* ((node-is-logical-operator (lambda (node)
+                                      (-contains? '("and" "or")
+                                                  ;; binary_expressions contain 3 elements; two expressions and one middle string
+                                                  (treesit-node-text (treesit-node-child node 1)))))
+          (matches (cognitive-complexity--find-children node "binary_expression"))
+          (has-child-logical-operator (-any (lambda (x) (funcall node-is-logical-operator x))
+                                            matches))
+          (self-is-logical-operator (funcall node-is-logical-operator node)))
+     (list (if (and self-is-logical-operator has-child-logical-operator)
+               1
+             0)
+           nil))
+   '(1 nil)))
 
 (defun cognitive-complexity-rules--ruby-binary (node &rest _)
   "Define rule for Ruby binary.
 
 For argument NODE, see function `cognitive-complexity-analyze' for more information."
-  (cognitive-complexity-with-complexity
-    (let ((text (treesit-node-text node))
-          (sequence nil))
-      (when (<= 2 (cognitive-complexity--count-matches '("||" "&&") text))
-        (setq sequence t))
-      (list (if sequence 1 0) nil))
-    '(1 nil)))
+  (cognitive-complexity-with-metrics
+   (let ((text (treesit-node-text node))
+         (sequence nil))
+     (when (<= 2 (cognitive-complexity--count-matches '("||" "&&") text))
+       (setq sequence t))
+     (list (if sequence 1 0) nil))
+   '(1 nil)))
 
 (defun cognitive-complexity-rules--rust-outer-loop (node &rest _)
   "Define rule for Rust outer loop (jump), `break' and `continue' statements.
