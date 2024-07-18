@@ -188,7 +188,10 @@ All arguments COND1 and COND2 are followed by variable `cognitive-complexity-met
 
 (defun cognitive-complexity--rules (&optional mode)
   "Return rules from major (MODE)."
-  (cdr (assoc (or mode major-mode) cognitive-complexity-rules)))
+  (mapcar ; Convert symbols to strings, this will help stealing rules from `codemetrics'!
+   (lambda (rule) (cons (let ((type (car rule))) (if (symbolp type) (symbol-name type) type))
+                        (cdr rule)))
+   (cdr (assq (or mode major-mode) cognitive-complexity-rules))))
 
 (defun cognitive-complexity--traverse-mapc (func node &optional depth)
   "Like function `tsc-traverse-mapc' but pass with node.
