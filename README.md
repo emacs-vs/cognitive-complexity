@@ -181,8 +181,8 @@ basic `cognitive-complexity-rules--class-declaration`.
 ## References
 
 - [`codemetrics`](https://github.com/emacs-vs/codemetrics)
-- [`cognitive-complexity`](https://github.com/kisstkondoros/cognitive-complexity)
-- [`resharper-cognitivecomplexity`](https://github.com/matkoch/resharper-cognitivecomplexity)
+- [Code Metrics - Visual Studio Code Extension](https://github.com/kisstkondoros/codemetrics)
+- [CognitiveComplexity for Rider and ReSharper](https://github.com/matkoch/resharper-cognitivecomplexity)
 - [`gocognit`](https://github.com/uudashr/gocognit)
 
 ## Development
