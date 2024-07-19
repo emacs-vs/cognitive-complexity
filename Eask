@@ -1,5 +1,5 @@
 (package "cognitive-complexity"
-         "0.1.0"
+         "1.0.0"
          "Plugin shows complexity information")
 
 (website-url "https://github.com/abougouffa/cognitive-complexity")
@@ -18,8 +18,5 @@
 
 (development
  (depends-on "kotlin-mode")
- (depends-on "go-mode")
  (depends-on "lua-mode")
- (depends-on "rust-mode")
- (depends-on "typescript-mode")
- (depends-on "tree-sitter-langs"))
+ (depends-on "treesit-auto"))

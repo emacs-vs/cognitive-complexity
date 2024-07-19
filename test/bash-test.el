@@ -21,11 +21,11 @@
 ;;
 
 ;;; Code:
-(require 'codemetrics)
+(require 'cognitive-complexity)
 
 (cognitive-complexity-test bash-simple
   "test/bash/Simple.sh"
-  sh-mode
+  bash-ts-mode
   '(3
     (function_definition . 0)
     (command . 0)
@@ -43,7 +43,7 @@
 
 (cognitive-complexity-test bash-recursion
   "test/bash/Recursion.sh"
-  sh-mode
+  bash-ts-mode
   '(2
     (function_definition . 0)
     (if_statement . 1)

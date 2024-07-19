@@ -21,7 +21,7 @@
 ;;
 
 ;;; Code:
-(require 'codemetrics)
+(require 'cognitive-complexity)
 
 (cognitive-complexity-test java-recursion
   "test/java/Recursion.java"
