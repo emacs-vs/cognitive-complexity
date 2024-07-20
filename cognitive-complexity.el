@@ -3,12 +3,14 @@
 ;; Copyright (C) 2023-2024  Shen, Jen-Chieh
 ;; Copyright (C) 2024  Abdelhak BOUGOUFFA
 
+;; Author: Shen, Jen-Chieh
 ;; Author: Abdelhak BOUGOUFFA
+;; Maintainer: Shen, Jen-Chieh
 ;; Maintainer: Abdelhak BOUGOUFFA
 ;; URL: https://github.com/abougouffa/cognitive-complexity
 ;; Version: 1.0.0
 ;; Package-Requires: ((emacs "29.1"))
-;; Keywords: convenience complexity
+;; Keywords: convenience tools c languages
 
 ;; This file is not part of GNU Emacs.
 
