@@ -21,19 +21,23 @@
 ;;
 
 ;;; Code:
+
+(require 'treesit-langs)  ; Install pre-built binaries
+
 (defmacro cognitive-complexity-test (test-name file major-mode expected-result)
   "Create a cognitive-complexity test named TEST-NAME using FILE in MAJOR-MODE.
 Expecting result EXPECTED-RESULT."
   (declare (indent 1))
   `(ert-deftest ,test-name ()
-    (with-current-buffer (find-file-noselect ,file)
-     (,major-mode)
-     (let* ((cognitive-complexity-results (cognitive-complexity-buffer))
-            (total-score (car cognitive-complexity-results))
-            (expressions-and-scores (cognitive-complexity-test-utils-expression-scores cognitive-complexity-results)))
-      (should (equal ,expected-result
-               (cons total-score
-                expressions-and-scores)))))))
+     (with-current-buffer (find-file-noselect ,file)
+       (,major-mode)
+       (treesit-langs-major-mode-setup)
+       (let* ((cognitive-complexity-results (cognitive-complexity-buffer))
+              (total-score (car cognitive-complexity-results))
+              (expressions-and-scores (cognitive-complexity-test-utils-expression-scores cognitive-complexity-results)))
+         (should (equal ,expected-result
+                        (cons total-score
+                              expressions-and-scores)))))))
 
 (defun cognitive-complexity-test-utils-expression-scores (analyze-result)
   "Helper method to get a list of simple expression + score pairs to work with."
