@@ -22,7 +22,7 @@
 
 ;;; Code:
 
-(require 'treesit-langs)  ; Install pre-built binary
+(require 'treesit-langs)  ; Install pre-built binaries
 
 (defmacro cognitive-complexity-test (test-name file major-mode expected-result)
   "Create a cognitive-complexity test named TEST-NAME using FILE in MAJOR-MODE.
@@ -31,6 +31,7 @@ Expecting result EXPECTED-RESULT."
   `(ert-deftest ,test-name ()
      (with-current-buffer (find-file-noselect ,file)
        (,major-mode)
+       (treesit-langs-major-mode-setup)
        (let* ((cognitive-complexity-results (cognitive-complexity-buffer))
               (total-score (car cognitive-complexity-results))
               (expressions-and-scores (cognitive-complexity-test-utils-expression-scores cognitive-complexity-results)))
