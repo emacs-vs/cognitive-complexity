@@ -29,17 +29,17 @@
   go-mode
   '(2
     ("function_declaration" . 0)
-    ("if_statement" . 1)
-    ("call_expression" . 0)
-    ("for_statement" . 1)))
+    ("if_statement"         . 1)
+    ("call_expression"      . 0)
+    ("for_statement"        . 1)))
 
 (cognitive-complexity-test recursion-go-code
   "test/go/Recursion.go"
   go-mode
   '(2
     ("function_declaration" . 0)
-    ("if_statement" . 1)
-    ("call_expression" . 1)))
+    ("if_statement"         . 1)
+    ("call_expression"      . 1)))
 
 ;; Test of issue:
 ;; https://github.com/emacs-vs/codemetrics/issues/7
@@ -48,11 +48,11 @@
   go-mode
   '(6
     ("function_declaration" . 0)
-    ("for_statement" . 1)
-    ("if_statement" . 2)
-    ("call_expression" . 0)
-    ("if_statement" . 2)
-    ("call_expression" . 0)
-    ("for_statement" . 1)))
+    ("for_statement"        . 1)
+    ("if_statement"         . 2)
+    ("call_expression"      . 0)
+    ("if_statement"         . 2)
+    ("call_expression"      . 0)
+    ("for_statement"        . 1)))
 
 ;;; go-test.el ends here

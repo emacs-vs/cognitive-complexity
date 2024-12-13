@@ -28,63 +28,63 @@
   "test/c/Simple.c"
   c-mode
   '(4
-    (preproc_ifdef . 1)
-    (function_definition . 0)
-    (for_statement . 1)
-    (while_statement . 1)
-    (if_statement . 1)
-    (call_expression . 0)))
+    ("preproc_ifdef"       . 1)
+    ("function_definition" . 0)
+    ("for_statement"       . 1)
+    ("while_statement"     . 1)
+    ("if_statement"        . 1)
+    ("call_expression"     . 0)))
 
 (cognitive-complexity-test c-recursion
   "test/c/Recursion.c"
   c-mode
   '(2
-    (function_definition . 0)
-    (if_statement . 1)
-    (call_expression . 1)))
+    ("function_definition" . 0)
+    ("if_statement"        . 1)
+    ("call_expression"     . 1)))
 
 (cognitive-complexity-test c-control-flow
   "test/c/ControlFlow.c"
-  c-ts-mode
+  c-mode
   '(5
-    (function_definition . 0)
-    (switch_statement . 1)
-    (call_expression . 0)
-    (function_definition . 0)
-    (do_statement . 1)
-    (call_expression . 0)
-    (function_definition . 0)
-    (call_expression . 0)
-    (if_statement . 1)
-    (goto_statement . 2)))
+    ("function_definition" . 0)
+    ("switch_statement"    . 1)
+    ("call_expression"     . 0)
+    ("function_definition" . 0)
+    ("do_statement"        . 1)
+    ("call_expression"     . 0)
+    ("function_definition" . 0)
+    ("call_expression"     . 0)
+    ("if_statement"        . 1)
+    ("goto_statement"      . 2)))
 
 (cognitive-complexity-test c-logical-operators
   "test/c/LogicalOperators.c"
-  c-ts-mode
+  c-mode
   '(6
-    (function_definition . 0)
-    (if_statement . 1)
-    ("&&" . 0)
-    (if_statement . 1)
-    ("||" . 0)
-    (if_statement . 1)
-    ("&&" . 0)
-    ("||" . 1)
-    (if_statement . 1)
-    ("||" . 1)
-    ("&&" . 0)))
+    ("function_definition" . 0)
+    ("if_statement"        . 1)
+    ("&&"                  . 0)
+    ("if_statement"        . 1)
+    ("||"                  . 0)
+    ("if_statement"        . 1)
+    ("&&"                  . 0)
+    ("||"                  . 1)
+    ("if_statement"        . 1)
+    ("||"                  . 1)
+    ("&&"                  . 0)))
 
 ;; Loosely inspired by go nested prints issue
 ;; (for verifying issue with multiple nested ifs inside a for-loop)
 (cognitive-complexity-test c-nested-prints
   "test/c/NestedPrints.c"
-  c-ts-mode
+  c-mode
   '(5
     (function_definition . 0)
-    (for_statement . 1)
-    (if_statement . 2)
-    (call_expression . 0)
-    (if_statement . 2)
-    (call_expression . 0)))
+    (for_statement       . 1)
+    (if_statement        . 2)
+    (call_expression     . 0)
+    (if_statement        . 2)
+    (call_expression     . 0)))
 
 ;;; c-test.el ends here

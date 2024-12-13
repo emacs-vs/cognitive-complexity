@@ -28,9 +28,9 @@
   "test/java/Recursion.java"
   java-mode
   '(2
-    (class_declaration . 0)
-    (method_declaration . 0)
-    (if_statement . 1)
-    (method_invocation . 1)))
+    ("class_declaration"  . 0)
+    ("method_declaration" . 0)
+    ("if_statement"       . 1)
+    ("method_invocation"  . 1)))
 
 ;;; java-test.el ends here

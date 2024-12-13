@@ -29,30 +29,30 @@
   "test/kotlin/Simple.kt"
   kotlin-mode
   '(2
-    (function_declaration . 0)
-    (if_expression . 1)
-    (for_statement . 1)
-    (call_expression . 0)))
+    ("function_declaration" . 0)
+    ("if_expression"        . 1)
+    ("for_statement"        . 1)
+    ("call_expression"      . 0)))
 
 (cognitive-complexity-test kotlin-recursion
   "test/kotlin/Recursion.kt"
   kotlin-mode
   '(2
-    (function_declaration . 0)
-    (if_expression . 1)
-    (call_expression . 1)))
+    ("function_declaration" . 0)
+    ("if_expression"        . 1)
+    ("call_expression"      . 1)))
 
 (cognitive-complexity-test kotlin-break-continue
   "test/kotlin/BreakContinue.kt"
   kotlin-mode
   '(6
-    (function_declaration . 0)
-    (call_expression . 0)
-    (for_statement . 1)
-    (if_expression . 2)
-    ("break" . 0)
-    (for_statement . 1)
-    (if_expression . 2)
-    ("continue" . 0)))
+    ("function_declaration" . 0)
+    ("call_expression"      . 0)
+    ("for_statement"        . 1)
+    ("if_expression"        . 2)
+    ("break"                . 0)
+    ("for_statement"        . 1)
+    ("if_expression"        . 2)
+    ("continue"             . 0)))
 
 ;;; kotlin-test.el ends here

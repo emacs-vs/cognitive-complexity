@@ -28,33 +28,33 @@
   "test/javascript/Simple.js"
   js-mode
   '(3
-    (function_declaration . 0)
-    (call_expression . 0)
-    (call_expression . 0)
-    (for_statement . 1)
-    (if_statement . 2)))
+    ("function_declaration" . 0)
+    ("call_expression"      . 0)
+    ("call_expression"      . 0)
+    ("for_statement"        . 1)
+    ("if_statement"         . 2)))
 
 (cognitive-complexity-test javascript-recursion
   "test/javascript/Recursion.js"
   js-mode
   '(2
-    (function_declaration . 0)
-    (if_statement . 1)
-    (call_expression . 1)))
+    ("function_declaration" . 0)
+    ("if_statement"         . 1)
+    ("call_expression"      . 1)))
 
 (cognitive-complexity-test javascript-nesting
   "test/javascript/Nesting.js"
   js-mode
   '(4
-    (call_expression . 0)
-    (arrow_function . 0)
-    (call_expression . 0)
-    (call_expression . 0)
-    (function_expression . 0)
-    (if_statement . 2)
-    (arrow_function . 0)
-    (if_statement . 2)
-    (call_expression . 0)))
+    ("call_expression"     . 0)
+    ("arrow_function"      . 0)
+    ("call_expression"     . 0)
+    ("call_expression"     . 0)
+    ("function_expression" . 0)
+    ("if_statement"        . 2)
+    ("arrow_function"      . 0)
+    ("if_statement"        . 2)
+    ("call_expression"     . 0)))
 
 (cognitive-complexity-test javascript-logical-operators
   "test/javascript/LogicalOperators.js"
