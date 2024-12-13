@@ -21,5 +21,5 @@
  (depends-on "lua-mode")
  (depends-on "treesit-langs"
              :repo "emacs-tree-sitter/treesit-langs"
-             :fetcher github)  ; pre-built binary
+             :fetcher 'github)  ; pre-built binary
  (depends-on "treesit-auto"))
