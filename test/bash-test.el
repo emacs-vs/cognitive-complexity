@@ -26,7 +26,7 @@
 
 (cognitive-complexity-test bash-simple
   "test/bash/Simple.sh"
-  bash-ts-mode
+  sh-mode
   '(3
     (function_definition . 0)
     (command . 0)
@@ -44,7 +44,7 @@
 
 (cognitive-complexity-test bash-recursion
   "test/bash/Recursion.sh"
-  bash-ts-mode
+  sh-mode
   '(2
     (function_definition . 0)
     (if_statement . 1)

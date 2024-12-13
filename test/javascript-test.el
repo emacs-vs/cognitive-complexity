@@ -26,7 +26,7 @@
 
 (cognitive-complexity-test javascript-simple
   "test/javascript/Simple.js"
-  js-ts-mode
+  js-mode
   '(3
     (function_declaration . 0)
     (call_expression . 0)
@@ -36,7 +36,7 @@
 
 (cognitive-complexity-test javascript-recursion
   "test/javascript/Recursion.js"
-  js-ts-mode
+  js-mode
   '(2
     (function_declaration . 0)
     (if_statement . 1)
@@ -44,7 +44,7 @@
 
 (cognitive-complexity-test javascript-nesting
   "test/javascript/Nesting.js"
-  js-ts-mode
+  js-mode
   '(4
     (call_expression . 0)
     (arrow_function . 0)
@@ -58,7 +58,7 @@
 
 (cognitive-complexity-test javascript-logical-operators
   "test/javascript/LogicalOperators.js"
-  js-ts-mode
+  js-mode
   '(2
     ("&&" . 0)
     ("||" . 0)

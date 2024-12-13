@@ -18,7 +18,10 @@
 
 (development
  (depends-on "kotlin-mode")
+ (depends-on "go-mode")
  (depends-on "lua-mode")
+ (depends-on "rust-mode")
+ (depends-on "typescript-mode")
  (depends-on "treesit-langs"
              :repo "emacs-tree-sitter/treesit-langs"
              :fetcher 'github)  ; pre-built binary

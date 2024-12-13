@@ -26,7 +26,7 @@
 
 (cognitive-complexity-test simple-go-code
   "test/go/Simple.go"
-  go-ts-mode
+  go-mode
   '(2
     ("function_declaration" . 0)
     ("if_statement" . 1)
@@ -35,7 +35,7 @@
 
 (cognitive-complexity-test recursion-go-code
   "test/go/Recursion.go"
-  go-ts-mode
+  go-mode
   '(2
     ("function_declaration" . 0)
     ("if_statement" . 1)
@@ -45,7 +45,7 @@
 ;; https://github.com/emacs-vs/codemetrics/issues/7
 (cognitive-complexity-test go-nested-print-calls
   "test/go/NestedPrints.go"
-  go-ts-mode
+  go-mode
   '(6
     ("function_declaration" . 0)
     ("for_statement" . 1)

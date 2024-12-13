@@ -26,7 +26,7 @@
 
 (cognitive-complexity-test c-simple
   "test/c/Simple.c"
-  c-ts-mode
+  c-mode
   '(4
     (preproc_ifdef . 1)
     (function_definition . 0)
@@ -37,7 +37,7 @@
 
 (cognitive-complexity-test c-recursion
   "test/c/Recursion.c"
-  c-ts-mode
+  c-mode
   '(2
     (function_definition . 0)
     (if_statement . 1)

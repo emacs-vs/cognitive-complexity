@@ -87,6 +87,4 @@
     (binary_expression . 0)
     (binary_expression . 0)))
 
-
-
 ;;; lua-test.el ends here

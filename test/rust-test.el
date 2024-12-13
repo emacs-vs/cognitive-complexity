@@ -26,7 +26,7 @@
 
 (cognitive-complexity-test rust-simple
   "test/rust/Simple.rs"
-  rust-ts-mode
+  rust-mode
   '(2
     (function_item . 0)
     (function_item . 0)
@@ -37,7 +37,7 @@
 
 (cognitive-complexity-test rust-recursion
   "test/rust/Recursion.rs"
-  rust-ts-mode
+  rust-mode
   '(2
     (function_item . 0)
     (if_expression . 1)
@@ -45,7 +45,7 @@
 
 (cognitive-complexity-test rust-nesting
   "test/rust/Nesting.rs"
-  rust-ts-mode
+  rust-mode
   '(5
     (function_item . 0)
     (macro_invocation . 0)
@@ -60,7 +60,7 @@
 
 (cognitive-complexity-test rust-logical-operators
   "test/rust/LogicalOperators.rs"
-  rust-ts-mode
+  rust-mode
   '(6
     (function_item . 0)
     (if_expression . 1)
@@ -76,7 +76,7 @@
 
 (cognitive-complexity-test rust-control-flow
   "test/rust/ControlFlow.rs"
-  rust-ts-mode
+  rust-mode
   '(17
     (function_item . 0)
     (loop_expression . 1)
