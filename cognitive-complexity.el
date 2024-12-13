@@ -7,7 +7,7 @@
 ;; Author: Abdelhak BOUGOUFFA
 ;; Maintainer: Shen, Jen-Chieh
 ;; Maintainer: Abdelhak BOUGOUFFA
-;; URL: https://github.com/abougouffa/cognitive-complexity
+;; URL: https://github.com/emacs-vs/cognitive-complexity
 ;; Version: 1.0.0
 ;; Package-Requires: ((emacs "29.1"))
 ;; Keywords: convenience tools c languages

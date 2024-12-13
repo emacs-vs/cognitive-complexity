@@ -21,6 +21,7 @@
 ;;
 
 ;;; Code:
+
 (require 'cognitive-complexity)
 (require 'lua-mode)
 

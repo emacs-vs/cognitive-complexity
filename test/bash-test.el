@@ -21,6 +21,7 @@
 ;;
 
 ;;; Code:
+
 (require 'cognitive-complexity)
 
 (cognitive-complexity-test bash-simple
