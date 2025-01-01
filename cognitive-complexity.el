@@ -1,7 +1,7 @@
 ;;; cognitive-complexity.el --- Minor mode to show the cognitive complexity of code  -*- lexical-binding: t; -*-
 
-;; Copyright (C) 2023-2024  Shen, Jen-Chieh
-;; Copyright (C) 2024  Abdelhak BOUGOUFFA
+;; Copyright (C) 2023-2025 Shen, Jen-Chieh
+;; Copyright (C) 2024-2025  Abdelhak BOUGOUFFA
 
 ;; Author: Shen, Jen-Chieh
 ;; Author: Abdelhak BOUGOUFFA

@@ -1,7 +1,7 @@
 ;;; cognitive-complexity-rules.el --- Define scoring rules  -*- lexical-binding: t; -*-
 
-;; Copyright (C) 2023-2024  Shen, Jen-Chieh
-;; Copyright (C) 2024  Abdelhak BOUGOUFFA
+;; Copyright (C) 2023-2025 Shen, Jen-Chieh
+;; Copyright (C) 2024-2025  Abdelhak BOUGOUFFA
 
 ;; This file is not part of GNU Emacs.
 
