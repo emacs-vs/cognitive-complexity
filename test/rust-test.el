@@ -21,74 +21,75 @@
 ;;
 
 ;;; Code:
+
 (require 'cognitive-complexity)
 
 (cognitive-complexity-test rust-simple
   "test/rust/Simple.rs"
-  rust-ts-mode
+  rust-mode
   '(2
-    (function_item . 0)
-    (function_item . 0)
-    (call_expression . 0)
-    (macro_invocation . 0)
-    (if_expression . 1)
-    (for_expression . 1)))
+    ("function_item"    . 0)
+    ("function_item"    . 0)
+    ("call_expression"  . 0)
+    ("macro_invocation" . 0)
+    ("if_expression"    . 1)
+    ("for_expression"   . 1)))
 
 (cognitive-complexity-test rust-recursion
   "test/rust/Recursion.rs"
-  rust-ts-mode
+  rust-mode
   '(2
-    (function_item . 0)
-    (if_expression . 1)
-    (call_expression . 1)))
+    ("function_item"   . 0)
+    ("if_expression"   . 1)
+    ("call_expression" . 1)))
 
 (cognitive-complexity-test rust-nesting
   "test/rust/Nesting.rs"
-  rust-ts-mode
+  rust-mode
   '(5
-    (function_item . 0)
-    (macro_invocation . 0)
-    (call_expression . 0)
-    (call_expression . 0)
-    (call_expression . 0)
-    (closure_expression . 0)
-    (closure_expression . 0)
-    (match_expression . 2)
-    (loop_expression . 1)
-    (if_expression . 2)))
+    ("function_item"      . 0)
+    ("macro_invocation"   . 0)
+    ("call_expression"    . 0)
+    ("call_expression"    . 0)
+    ("call_expression"    . 0)
+    ("closure_expression" . 0)
+    ("closure_expression" . 0)
+    ("match_expression"   . 2)
+    ("loop_expression"    . 1)
+    ("if_expression"      . 2)))
 
 (cognitive-complexity-test rust-logical-operators
   "test/rust/LogicalOperators.rs"
-  rust-ts-mode
+  rust-mode
   '(6
-    (function_item . 0)
-    (if_expression . 1)
-    ("&&" . 0)
-    (if_expression . 1)
-    ("||" . 0)
-    (if_expression . 1)
-    ("&&" . 0)
-    ("||" . 1)
-    (if_expression . 1)
-    ("||" . 1)
-    ("&&" . 0)))
+    ("function_item" . 0)
+    ("if_expression" . 1)
+    ("&&"            . 0)
+    ("if_expression" . 1)
+    ("||"            . 0)
+    ("if_expression" . 1)
+    ("&&"            . 0)
+    ("||"            . 1)
+    ("if_expression" . 1)
+    ("||"            . 1)
+    ("&&"            . 0)))
 
 (cognitive-complexity-test rust-control-flow
   "test/rust/ControlFlow.rs"
-  rust-ts-mode
+  rust-mode
   '(17
-    (function_item . 0)
-    (loop_expression . 1)
-    (loop_expression . 2)
-    (if_expression . 3)
-    (break_expression . 1)
-    (if_expression . 3)
-    (continue_expression . 0)
-    (macro_invocation . 0)
-    (for_expression . 1)
-    (loop_expression . 2)
-    (if_expression . 3)
-    (continue_expression . 1)
-    (break_expression . 0)))
+    ("function_item"       . 0)
+    ("loop_expression"     . 1)
+    ("loop_expression"     . 2)
+    ("if_expression"       . 3)
+    ("break_expression"    . 1)
+    ("if_expression"       . 3)
+    ("continue_expression" . 0)
+    ("macro_invocation"    . 0)
+    ("for_expression"      . 1)
+    ("loop_expression"     . 2)
+    ("if_expression"       . 3)
+    ("continue_expression" . 1)
+    ("break_expression"    . 0)))
 
 ;;; rust-test.el ends here
