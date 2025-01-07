@@ -4,7 +4,7 @@
 # Cognitive Complexity for Emacs
 Show the cognitive complexity of the code
 
-[![CI](https://github.com/abougouffa/cognitive-complexity/actions/workflows/test.yml/badge.svg)](https://github.com/abougouffa/cognitive-complexity/actions/workflows/test.yml)
+[![CI](https://github.com/emacs-vs/cognitive-complexity/actions/workflows/test.yml/badge.svg)](https://github.com/emacs-vs/cognitive-complexity/actions/workflows/test.yml)
 
 <img src="./etc/demo.gif" />
 
@@ -35,13 +35,13 @@ information later!
 
 ```elisp
 (use-package cognitive-complexity
-  :straight (:host github :repo "abougouffa/cognitive-complexity"))
+  :straight (:host github :repo "emacs-vs/cognitive-complexity"))
 ```
 
 ### Manually
 
 ```sh
-git clone https://github.com/abougouffa/cognitive-complexity /path/to/lib
+git clone https://github.com/emacs-vs/cognitive-complexity /path/to/lib
 ```
 
 then in Emacs:
