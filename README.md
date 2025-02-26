@@ -196,34 +196,34 @@ To run the test locally, you will need the following tools:
 Install all dependencies and development dependencies:
 
 ```sh
-$ eask install-deps --dev
+eask install-deps --dev
 ```
 
 To test the package's installation:
 
 ```sh
-$ eask package
-$ eask install
+eask package
+eask install
 ```
 
 To test compilation:
 
 ```sh
-$ eask compile
+eask compile
 ```
 
-**The following steps are optional, but we recommend you follow these lint results!**
+**🪧 The following steps are optional, but we recommend you follow these lint results!**
 
 The built-in `checkdoc` linter:
 
 ```sh
-$ eask lint checkdoc
+eask lint checkdoc
 ```
 
 The standard `package` linter:
 
 ```sh
-$ eask lint package
+eask lint package
 ```
 
 *P.S. For more information, find the Eask manual at https://emacs-eask.github.io/.*
