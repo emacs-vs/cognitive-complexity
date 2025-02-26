@@ -226,7 +226,7 @@ The standard `package` linter:
 eask lint package
 ```
 
-*P.S. For more information, find the Eask manual at https://emacs-eask.github.io/.*
+*📝 P.S. For more information, find the Eask manual at https://emacs-eask.github.io/.*
 
 ## How to add an analysis rules?
 
