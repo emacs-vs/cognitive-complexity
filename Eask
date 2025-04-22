@@ -1,3 +1,5 @@
+;; -*- mode: eask; lexical-binding: t -*-
+
 (package "cognitive-complexity"
          "1.0.0"
          "Plugin shows complexity information")
