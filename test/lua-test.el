@@ -21,6 +21,7 @@
 ;;
 
 ;;; Code:
+
 (require 'cognitive-complexity)
 (require 'lua-mode)
 
@@ -28,64 +29,62 @@
   "test/lua/Simple.lua"
   lua-mode
   '(3
-    (function_declaration . 0)
-    (binary_expression . 0)
-    (function_call . 0)
-    (binary_expression . 0)
-    (function_call . 0)
-    (for_statement . 1)
-    (if_statement . 2)
-    (binary_expression . 0)))
+    ("function_declaration" . 0)
+    ("binary_expression"    . 0)
+    ("function_call"        . 0)
+    ("binary_expression"    . 0)
+    ("function_call"        . 0)
+    ("for_statement"        . 1)
+    ("if_statement"         . 2)
+    ("binary_expression"    . 0)))
 
 (cognitive-complexity-test lua-recursion
   "test/lua/Recursion.lua"
   lua-mode
   '(2
-    (function_declaration . 0)
-    (if_statement . 1)
-    (binary_expression . 0)
-    (binary_expression . 0)
-    (function_call . 1)
-    (binary_expression . 0)))
+    ("function_declaration" . 0)
+    ("if_statement"         . 1)
+    ("binary_expression"    . 0)
+    ("binary_expression"    . 0)
+    ("function_call"        . 1)
+    ("binary_expression"    . 0)))
 
 (cognitive-complexity-test lua-nesting
   "test/lua/Nesting.lua"
   lua-mode
   '(7
-    (while_statement . 1)
-    (binary_expression . 0)
-    (if_statement . 2)
-    (binary_expression . 0)
-    (binary_expression . 0)
-    (binary_expression . 0)
-    (repeat_statement . 2)
-    (binary_expression . 0)
-    (binary_expression . 0)
-    (if_statement . 1)
-    (binary_expression . 0)
-    (goto_statement . 1)))
+    ("while_statement"   . 1)
+    ("binary_expression" . 0)
+    ("if_statement"      . 2)
+    ("binary_expression" . 0)
+    ("binary_expression" . 0)
+    ("binary_expression" . 0)
+    ("repeat_statement"  . 2)
+    ("binary_expression" . 0)
+    ("binary_expression" . 0)
+    ("if_statement"      . 1)
+    ("binary_expression" . 0)
+    ("goto_statement"    . 1)))
 
 (cognitive-complexity-test lua-logical-operators
   "test/lua/LogicalOperators.lua"
   lua-mode
   '(2
-    (binary_expression . 0)
-    (binary_expression . 0)
-    (binary_expression . 0)
-    (binary_expression . 0)
-    (binary_expression . 0)
-    (binary_expression . 0)
-    (binary_expression . 1)
-    (binary_expression . 0)
-    (binary_expression . 0)
-    (binary_expression . 0)
-    (binary_expression . 0)
-    (binary_expression . 1)
-    (binary_expression . 0)
-    (binary_expression . 0)
-    (binary_expression . 0)
-    (binary_expression . 0)))
-
-
+    ("binary_expression" . 0)
+    ("binary_expression" . 0)
+    ("binary_expression" . 0)
+    ("binary_expression" . 0)
+    ("binary_expression" . 0)
+    ("binary_expression" . 0)
+    ("binary_expression" . 1)
+    ("binary_expression" . 0)
+    ("binary_expression" . 0)
+    ("binary_expression" . 0)
+    ("binary_expression" . 0)
+    ("binary_expression" . 1)
+    ("binary_expression" . 0)
+    ("binary_expression" . 0)
+    ("binary_expression" . 0)
+    ("binary_expression" . 0)))
 
 ;;; lua-test.el ends here
