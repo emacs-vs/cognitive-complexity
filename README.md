@@ -179,14 +179,26 @@ basic `cognitive-complexity-rules--class-declaration`.
     '(1 nil)))
 ```
 
-## References
+## 🔗 References
 
 - [`codemetrics`](https://github.com/emacs-vs/codemetrics)
 - [Code Metrics - Visual Studio Code Extension](https://github.com/kisstkondoros/codemetrics)
 - [CognitiveComplexity for Rider and ReSharper](https://github.com/matkoch/resharper-cognitivecomplexity)
 - [`gocognit`](https://github.com/uudashr/gocognit)
 
-## Development
+## 🛠️ Contribute
+
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](http://makeapullrequest.com)
+[![Elisp styleguide](https://img.shields.io/badge/elisp-style%20guide-purple?logo=gnuemacs&logoColor=white)](https://github.com/bbatsov/emacs-lisp-style-guide)
+[![Donate on paypal](https://img.shields.io/badge/paypal-donate-1?logo=paypal&color=blue)](https://www.paypal.me/jcs090218)
+[![Become a patron](https://img.shields.io/badge/patreon-become%20a%20patron-orange.svg?logo=patreon)](https://www.patreon.com/jcs090218)
+
+If you would like to contribute to this project, you may either
+clone and make pull requests to this repository. Or you can
+clone the project and establish your own branch of this tool.
+Any methods are welcome!
+
+### 🔬 Development
 
 To run the test locally, you will need the following tools:
 
