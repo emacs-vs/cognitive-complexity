@@ -21,11 +21,12 @@
 ;;
 
 ;;; Code:
+
 (require 'cognitive-complexity)
 
 (cognitive-complexity-test typescript-simple
   "test/typescript/Simple.ts"
-  typescript-ts-mode
+  typescript-mode
   '(1
     ("class_declaration" . 0)
     ("method_definition" . 0)
