@@ -1,6 +1,6 @@
 ;;; typescript-test.el --- TypeScript language tests for cognitive-complexity.el  -*- lexical-binding: t; -*-
 
-;; Copyright (C) 2024-2025 Marie Katrine Ekeberg
+;; Copyright (C) 2024-2026 Marie Katrine Ekeberg
 
 ;; Author: Marie Katrine Ekeberg <mke@themkat.net>
 
